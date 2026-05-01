@@ -72,6 +72,14 @@
     .drawer-title{font-size:1.1rem;color:var(--white);letter-spacing:.01em}
     .drawer-subtitle{font-size:.58rem;color:var(--green);letter-spacing:.14em;text-transform:uppercase;margin-top:1px}
     .drawer-section-label{font-size:.62rem;text-transform:uppercase;letter-spacing:.14em;color:rgba(174,195,54,.8);padding:18px 20px 6px;flex-shrink:0}
+    .drawer-group-toggle{display:flex;align-items:center;gap:10px;padding:11px 20px;cursor:pointer;color:var(--white);font-size:.88rem;transition:background .15s;flex-shrink:0;user-select:none}
+    .drawer-group-toggle:hover{background:rgba(255,255,255,.07)}
+    .drawer-group-toggle .di-icon{font-size:1.1rem;width:22px;text-align:center}
+    .drawer-group-toggle .toggle-arrow{margin-left:auto;font-size:.7rem;transition:transform .25s;color:rgba(255,255,255,.4)}
+    .drawer-group-toggle.open .toggle-arrow{transform:rotate(90deg)}
+    .drawer-submenu{overflow:hidden;max-height:0;transition:max-height .3s cubic-bezier(.4,0,.2,1)}
+    .drawer-submenu.open{max-height:600px}
+    .drawer-submenu .drawer-item{padding-left:36px;font-size:.84rem}
     .drawer-item{display:flex;align-items:center;gap:12px;padding:13px 20px;color:rgba(255,255,255,.75);font-size:.92rem;cursor:pointer;transition:background .15s,color .15s;border-left:3px solid transparent;flex-shrink:0}
     .drawer-item:hover,.drawer-item.active{background:rgba(174,195,54,.1);color:var(--white);border-left-color:var(--green)}
     .drawer-item .di-icon{font-size:1.1rem;width:24px;text-align:center;flex-shrink:0}
@@ -133,6 +141,13 @@
     /* LABELS */
     .cat-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--white);background:var(--navy);padding:8px 14px;border-radius:var(--radius);margin:18px 0 8px;display:flex;align-items:center;gap:8px}
     .cat-label:first-child{margin-top:0}
+    /* SUBCAT FILTERBALK */
+    #subcat-balk{display:none;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+    .subcat-chip{font-size:.72rem;padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap;font-family:'Questrial',sans-serif}
+    .subcat-chip:hover{border-color:var(--navy);color:var(--navy)}
+    .subcat-chip.active{background:var(--navy);border-color:var(--navy);color:var(--white);font-weight:600}
+
+    /* SUBCAT LABEL IN LIJST */
     .subcat-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--navy);background:var(--green-light);border:1px solid var(--green);padding:5px 12px;border-radius:4px;margin:10px 0 6px;display:inline-block;font-weight:600}
 
     /* VERPAKKING POPUP */
@@ -389,6 +404,7 @@
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input type="text" id="zoek" placeholder="Zoek op naam of artikelnummer..." oninput="applyFilters()" />
   </div>
+  <div id="subcat-balk" style="display:none;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
   <div class="artikel-grid" id="artikel-lijst"></div>
 </div>
 
@@ -540,7 +556,49 @@ function loadCart() {
   updateBadge();
 }
 let activeCat = null;
+let activeSubcat = null;
 let customTeller = 0;
+
+function updateSubcatBalk() {
+  const balk = document.getElementById('subcat-balk');
+  balk.innerHTML = '';
+
+  if (!activeCat) {
+    // Geen hoofdfilter → toon alle hoofdcategorieën als chips
+    const cats = [...new Set(ARTIKELEN.map(a => a.cat).filter(Boolean))].sort();
+    if (!cats.length) { balk.style.display = 'none'; return; }
+    balk.style.display = 'flex';
+    cats.forEach(cat => {
+      const chip = document.createElement('button');
+      chip.className = 'subcat-chip';
+      chip.textContent = (ICONS[cat] || ICON_DEFAULTS[cat] || '📦') + ' ' + cat;
+      chip.onclick = () => filterCategorie(cat);
+      balk.appendChild(chip);
+    });
+  } else {
+    // Hoofdfilter actief → toon subcategorieën van die categorie
+    const subcats = [...new Set(
+      ARTIKELEN.filter(a => a.cat === activeCat).map(a => a.subcat).filter(Boolean)
+    )].sort();
+
+    if (!subcats.length) { balk.style.display = 'none'; activeSubcat = null; return; }
+
+    balk.style.display = 'flex';
+    const alChip = document.createElement('button');
+    alChip.className = 'subcat-chip' + (!activeSubcat ? ' active' : '');
+    alChip.textContent = 'Alle';
+    alChip.onclick = () => { activeSubcat = null; updateSubcatBalk(); applyFilters(); };
+    balk.appendChild(alChip);
+
+    subcats.forEach(sub => {
+      const chip = document.createElement('button');
+      chip.className = 'subcat-chip' + (activeSubcat === sub ? ' active' : '');
+      chip.textContent = sub;
+      chip.onclick = () => { activeSubcat = sub; updateSubcatBalk(); applyFilters(); };
+      balk.appendChild(chip);
+    });
+  }
+}
 
 // ── VRIJ ARTIKEL ─────────────────────────────────────────────
 function openVrijArtikel() {
@@ -577,7 +635,7 @@ function laadArtikelenUitSheets() {
     const sesCache = sessionStorage.getItem('emondt_artikelen_sessie');
     if (sesCache) {
       ARTIKELEN = JSON.parse(sesCache);
-      bouwDrawerCats();
+      bouwDrawerCats(); updateSubcatBalk();
       renderArtikelen(ARTIKELEN);
       console.log('[Cache] Sessiecache geladen:', ARTIKELEN.length, 'artikelen');
       // Ververs op achtergrond zonder laad-indicator
@@ -596,7 +654,7 @@ function laadArtikelenUitSheets() {
       ARTIKELEN = JSON.parse(cached);
       // Zet ook in sessiecache
       try { sessionStorage.setItem('emondt_artikelen_sessie', cached); } catch(e) {}
-      bouwDrawerCats();
+      bouwDrawerCats(); updateSubcatBalk();
       renderArtikelen(ARTIKELEN);
       console.log('[Cache] LocalStorage cache geladen:', ARTIKELEN.length, 'artikelen');
       // Ververs op achtergrond
@@ -615,7 +673,7 @@ function fetchSheets(toonLaadindicator) {
     const cached = (() => { try { return localStorage.getItem('emondt_artikelen_cache'); } catch(e){ return null; } })();
     if (cached) {
       ARTIKELEN = JSON.parse(cached);
-      bouwDrawerCats();
+      bouwDrawerCats(); updateSubcatBalk();
       renderArtikelen(ARTIKELEN);
       showToast('📦 Gecachte database geladen');
     } else {
@@ -649,7 +707,7 @@ function fetchSheets(toonLaadindicator) {
           sessionStorage.setItem('emondt_artikelen_sessie', json);
         } catch(e) {}
 
-        bouwDrawerCats();
+        bouwDrawerCats(); updateSubcatBalk();
         renderArtikelen(ARTIKELEN);
         console.log('[Sheets] Geladen:', ARTIKELEN.length, 'artikelen');
         if (toonLaadindicator) showToast('✓ ' + ARTIKELEN.length + ' artikelen geladen');
@@ -671,7 +729,7 @@ function laadUitCache(reden) {
     if (cached) {
       ARTIKELEN = JSON.parse(cached);
       try { sessionStorage.setItem('emondt_artikelen_sessie', cached); } catch(e) {}
-      bouwDrawerCats();
+      bouwDrawerCats(); updateSubcatBalk();
       renderArtikelen(ARTIKELEN);
       const ts = localStorage.getItem('emondt_artikelen_ts');
       const leeftijd = ts ? Math.round((Date.now() - parseInt(ts)) / 60000) : '?';
@@ -698,7 +756,9 @@ function closeDrawer() {
 
 // ── CATEGORIE FILTER ──────────────────────────────────────────
 function filterCategorie(cat) {
-  activeCat = cat; closeDrawer();
+  activeCat = cat;
+  activeSubcat = null;
+  closeDrawer();
   document.querySelectorAll('.drawer-item').forEach(el => el.classList.remove('active'));
   if (cat) {
     const id = CAT_IDS[cat];
@@ -709,6 +769,7 @@ function filterCategorie(cat) {
   const banner = document.getElementById('cat-banner');
   if (cat) { document.getElementById('cat-banner-text').textContent = cat; banner.classList.add('visible'); }
   else { banner.classList.remove('visible'); }
+  updateSubcatBalk();
   showTab('artikelen');
   applyFilters();
 }
@@ -747,6 +808,7 @@ function bouwDrawerCats() {
 function applyFilters() {
   const q = document.getElementById('zoek').value.toLowerCase();
   let lijst = activeCat ? ARTIKELEN.filter(a => a.cat === activeCat) : ARTIKELEN;
+  if (activeSubcat) lijst = lijst.filter(a => a.subcat === activeSubcat);
   if (q) lijst = lijst.filter(a => a.naam.toLowerCase().includes(q) || a.code.toLowerCase().includes(q));
   renderArtikelen(lijst);
 }
