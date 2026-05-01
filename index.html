@@ -233,10 +233,18 @@
       <div class="drawer-subtitle">Materiaal bestellen</div>
     </div>
   </div>
-  <div class="drawer-section-label">Artikelcategorieën</div>
   <div class="drawer-item active" id="di-all" onclick="filterCategorie(null)"><span class="di-icon">📋</span> Alle artikelen</div>
   <div class="drawer-divider"></div>
-  <div id="drawer-cat-lijst"></div>
+  <div class="drawer-group-toggle" id="di-installatie-toggle" onclick="toggleDrawerGroep()">
+    <span class="di-icon">🔧</span>
+    <span>Installatiemateriaal</span>
+    <span class="toggle-arrow">▶</span>
+  </div>
+  <div class="drawer-submenu" id="drawer-cat-lijst"></div>
+  <div class="drawer-group-toggle" style="opacity:.45;cursor:default;pointer-events:none">
+    <span class="di-icon">🕐</span>
+    <span>binnenkort meer functies!</span>
+  </div>
   <div class="drawer-spacer"></div>
   <div class="drawer-bottom">
     <div class="drawer-divider"></div>
@@ -755,6 +763,19 @@ function closeDrawer() {
 }
 
 // ── CATEGORIE FILTER ──────────────────────────────────────────
+function toggleDrawerGroep() {
+  const toggle = document.getElementById('di-installatie-toggle');
+  const menu   = document.getElementById('drawer-cat-lijst');
+  const isOpen = menu.classList.contains('open');
+  toggle.classList.toggle('open', !isOpen);
+  menu.classList.toggle('open', !isOpen);
+}
+
+function openDrawerGroep() {
+  document.getElementById('di-installatie-toggle').classList.add('open');
+  document.getElementById('drawer-cat-lijst').classList.add('open');
+}
+
 function filterCategorie(cat) {
   activeCat = cat;
   activeSubcat = null;
@@ -763,6 +784,7 @@ function filterCategorie(cat) {
   if (cat) {
     const id = CAT_IDS[cat];
     if (id) document.getElementById(id)?.classList.add('active');
+    openDrawerGroep();
   } else {
     document.getElementById('di-all')?.classList.add('active');
   }
