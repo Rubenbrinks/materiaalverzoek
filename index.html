@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <!-- PWA Core -->
+  <meta name="theme-color" content="#041c42" />
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Android / Chrome -->
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <!-- iOS / Safari -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Emondt materiaalapp" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png" />
+
+  <!-- SEO / Share -->
+  <meta name="description" content="Emondt Materiaalapp – Artikelen selecteren en bestellen voor monteurs." />
+  <meta name="application-name" content="Emondt materiaalapp" />
+  <meta name="author" content="Emondt Groep" />
+
+  <!-- Microsoft / Windows -->
+  <meta name="msapplication-TileColor" content="#041c42" />
+  <meta name="msapplication-TileImage" content="icon-192.png" />
+  <meta name="msapplication-tap-highlight" content="no" />
+
+  <title>Emondt – Materiaal bestellen</title>
+  <link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#F8F8F8; --surface:#fff; --border:#dde1e6;
+      --navy:#041c42; --navy2:#062860;
+      --anthracite:#22262A; --green:#AEC336; --green-light:#f0f5d6;
+      --beige:#bba787; --muted:#8a9ab0; --text:#22262A;
+      --white:#fff; --danger:#c0392b; --radius:8px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Questrial',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden}
+
+    /* HEADER */
+    header{background:var(--navy);padding:0 16px;position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;height:62px;box-shadow:0 2px 12px rgba(4,28,66,.22)}
+    .header-left{display:flex;align-items:center;gap:12px}
+    .hamburger{width:36px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;border-radius:6px;transition:background .2s;flex-shrink:0}
+    .hamburger:active{background:rgba(255,255,255,.1)}
+    .hamburger span{display:block;width:20px;height:2px;background:var(--white);border-radius:2px;transition:all .25s ease}
+    .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+    .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    .logo-wrap{display:flex;align-items:center;gap:10px}
+    .logo-text{display:flex;flex-direction:column;line-height:1.15}
+    .logo-name{font-size:1.22rem;color:var(--white);letter-spacing:.01em}
+    .logo-sub{font-size:.6rem;color:var(--green);letter-spacing:.14em;text-transform:uppercase}
+
+    /* CART BADGE BUTTON */
+    .cart-btn{background:var(--green);color:var(--navy);font-size:.78rem;font-weight:600;padding:6px 14px;border-radius:20px;letter-spacing:.03em;border:none;cursor:pointer;display:flex;align-items:center;gap:6px;transition:opacity .15s}
+    .cart-btn:active{opacity:.8}
+
+    /* DRAWER */
+    .drawer-overlay{position:fixed;inset:0;background:rgba(4,28,66,.45);z-index:300;opacity:0;pointer-events:none;transition:opacity .25s ease}
+    .drawer-overlay.open{opacity:1;pointer-events:all}
+    .drawer{position:fixed;top:0;left:0;bottom:0;width:280px;background:var(--navy);z-index:400;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto;box-shadow:4px 0 24px rgba(4,28,66,.3)}
+    .drawer.open{transform:translateX(0)}
+    .drawer-header{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .drawer-logo-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .drawer-title{font-size:1.1rem;color:var(--white);letter-spacing:.01em}
+    .drawer-subtitle{font-size:.58rem;color:var(--green);letter-spacing:.14em;text-transform:uppercase;margin-top:1px}
+    .drawer-section-label{font-size:.62rem;text-transform:uppercase;letter-spacing:.14em;color:rgba(174,195,54,.8);padding:18px 20px 6px;flex-shrink:0}
+    .drawer-item{display:flex;align-items:center;gap:12px;padding:13px 20px;color:rgba(255,255,255,.75);font-size:.92rem;cursor:pointer;transition:background .15s,color .15s;border-left:3px solid transparent;flex-shrink:0}
+    .drawer-item:hover,.drawer-item.active{background:rgba(174,195,54,.1);color:var(--white);border-left-color:var(--green)}
+    .drawer-item .di-icon{font-size:1.1rem;width:24px;text-align:center;flex-shrink:0}
+    .drawer-divider{height:1px;background:rgba(255,255,255,.08);margin:8px 20px;flex-shrink:0}
+    .drawer-spacer{flex:1}
+    .drawer-bottom{border-top:1px solid rgba(255,255,255,.1);padding:12px 0;flex-shrink:0}
+
+    /* TABS */
+    .tabs{display:flex;background:var(--navy);border-bottom:3px solid var(--green);overflow-x:auto;scrollbar-width:none;position:sticky;top:62px;z-index:100}
+    .tabs::-webkit-scrollbar{display:none}
+    .tab{flex:1;min-width:80px;padding:10px 8px;text-align:center;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-3px;transition:all .2s;white-space:nowrap}
+    .tab.active{color:var(--white);border-bottom-color:var(--green)}
+
+    /* CAT BANNER */
+    .cat-banner{display:none;background:var(--green);color:var(--navy);font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;padding:6px 16px;align-items:center;gap:8px}
+    .cat-banner.visible{display:flex}
+    .cat-banner button{margin-left:auto;background:rgba(4,28,66,.15);border:none;color:var(--navy);font-size:.72rem;font-family:'Questrial',sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:12px;cursor:pointer}
+
+    /* SECTIONS */
+    .section{display:none;padding:16px}
+
+    /* LANDING PAGE */
+    .landing-hero{background:var(--navy);border-radius:var(--radius);padding:28px 20px;margin-bottom:18px;text-align:center}
+    .landing-hero h1{font-size:1.8rem;color:var(--white);letter-spacing:.02em;margin-bottom:8px}
+    .landing-hero p{font-size:.88rem;color:rgba(255,255,255,.7);line-height:1.7}
+    .landing-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
+    .landing-step{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;gap:14px;align-items:flex-start;box-shadow:0 1px 4px rgba(4,28,66,.06)}
+    .step-num{background:var(--green);color:var(--navy);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0;margin-top:1px}
+    .step-info h3{font-size:.88rem;color:var(--anthracite);margin-bottom:3px}
+    .step-info p{font-size:.78rem;color:var(--muted);line-height:1.5}
+    .landing-start-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;background:var(--green);color:var(--navy);border:none;border-radius:var(--radius);font-family:'Questrial',sans-serif;font-size:.95rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:opacity .15s}
+    .landing-start-btn:active{opacity:.85}
+
+    /* CARDS */
+    .info-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px;box-shadow:0 1px 4px rgba(4,28,66,.06)}
+    .info-card h2{font-size:.68rem;text-transform:uppercase;letter-spacing:.14em;color:var(--green);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+
+    /* FORM */
+    .field-row{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+    .field-row:last-child{margin-bottom:0}
+    .field-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    label{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+    .req{color:var(--green);font-size:.75rem}
+    select{background:var(--bg);border:1.5px solid var(--border);border-radius:6px;color:var(--text);font-family:'Questrial',sans-serif;font-size:.92rem;padding:10px 12px;width:100%;outline:none;transition:border-color .2s;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a9ab0' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;cursor:pointer}
+    select:focus{border-color:var(--green);background-color:#fff}
+    select option{color:var(--text);background:#fff}
+    input,textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:6px;color:var(--text);font-family:'Questrial',sans-serif;font-size:.92rem;padding:10px 12px;width:100%;outline:none;transition:border-color .2s;-webkit-appearance:none}
+    input[type=date]{cursor:pointer}
+    input:focus,textarea:focus{border-color:var(--green);background:#fff}
+    input::placeholder,textarea::placeholder{color:#b0bec8}
+    textarea{resize:vertical;min-height:76px}
+
+    /* SEARCH */
+    .search-bar{display:flex;align-items:center;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:0 12px;margin-bottom:14px;gap:8px;box-shadow:0 1px 3px rgba(4,28,66,.05)}
+    .search-bar svg{color:var(--muted);flex-shrink:0}
+    .search-bar input{background:transparent;border:none;padding:12px 0;font-size:.92rem;box-shadow:none;color:var(--text)}
+    .search-bar input:focus{background:transparent;border:none}
+
+    /* LABELS */
+    .cat-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--white);background:var(--navy);padding:8px 14px;border-radius:var(--radius);margin:18px 0 8px;display:flex;align-items:center;gap:8px}
+    .cat-label:first-child{margin-top:0}
+    .subcat-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--navy);background:var(--green-light);border:1px solid var(--green);padding:5px 12px;border-radius:4px;margin:10px 0 6px;display:inline-block;font-weight:600}
+
+    /* VERPAKKING POPUP */
+    .verpakking-popup{position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:var(--navy);color:var(--white);font-size:.76rem;padding:8px 12px;border-radius:6px;box-shadow:0 4px 16px rgba(4,28,66,.25);z-index:50;line-height:1.5;pointer-events:none}
+    .verpakking-popup::after{content:'';position:absolute;top:100%;left:20px;border:5px solid transparent;border-top-color:var(--navy)}
+    .artikel-card{position:relative}
+
+    /* WAARSCHUWING OP ARTIKELKAART */
+    .artikel-warning{display:inline-flex;align-items:center;gap:6px;background:#fff8e1;border:1px solid #f6c90e;border-radius:5px;padding:5px 9px;margin-top:6px;font-size:.72rem;color:#7a6000;line-height:1.3}
+    .artikel-warning svg{flex-shrink:0;color:#f6c90e}
+
+    /* ARTIKEL KAART */
+    .artikel-grid{display:flex;flex-direction:column;gap:8px}
+    .artikel-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:flex-start;gap:12px;transition:border-color .2s,box-shadow .2s;box-shadow:0 1px 3px rgba(4,28,66,.05)}
+    .artikel-card.selected{border-color:var(--green);background:var(--green-light);box-shadow:0 2px 8px rgba(174,195,54,.18)}
+    .artikel-icon{width:40px;height:40px;border-radius:6px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem}
+    .artikel-card.selected .artikel-icon{background:#e2eba3;border-color:var(--green)}
+    .artikel-info{flex:1;min-width:0}
+    .artikel-naam{font-size:.86rem;color:var(--anthracite);white-space:normal;word-break:break-word;line-height:1.35}
+    .artikel-code{font-size:.7rem;color:var(--muted);margin-top:2px;letter-spacing:.04em}
+
+    /* QTY */
+    .qty-control{display:flex;align-items:center;background:var(--bg);border:1.5px solid var(--border);border-radius:6px;overflow:hidden;flex-shrink:0}
+    .artikel-card.selected .qty-control{border-color:#c5d24a;background:#fff}
+    .qty-btn{width:32px;height:34px;background:none;border:none;color:var(--navy);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+    .qty-btn:active{background:#e8eef4}
+    .qty-val{width:44px;text-align:center;font-size:.93rem;color:var(--navy);border-left:1px solid var(--border);border-right:1px solid var(--border);padding:4px 2px;outline:none;background:transparent;font-family:'Questrial',sans-serif}
+
+    /* CART */
+    .empty-cart{text-align:center;padding:50px 20px;color:var(--muted)}
+    .empty-cart svg{opacity:.2;margin-bottom:12px;color:var(--navy)}
+    .empty-cart p{font-size:.86rem;line-height:1.7}
+    .cart-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;box-shadow:0 1px 3px rgba(4,28,66,.05)}
+    .cart-item-info{flex:1;min-width:0}
+    .cart-item-naam{font-size:.86rem;color:var(--anthracite);white-space:normal;word-break:break-word;line-height:1.35}
+    .cart-item-code{font-size:.69rem;color:var(--muted);margin-top:2px}
+    .cart-qty-badge{background:var(--navy);color:var(--white);font-size:.86rem;width:34px;height:34px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .remove-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:6px;border-radius:6px;display:flex;align-items:center;transition:color .15s,background .15s;flex-shrink:0}
+    .remove-btn:active{color:var(--danger);background:#fdecea}
+    .date-row{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:14px}
+    .date-row label{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);flex-shrink:0;margin-bottom:0}
+    .date-row input{border:1.5px solid var(--border);border-radius:6px;background:var(--bg);padding:8px 10px;font-size:.9rem;flex:1}
+
+    /* SUMMARY */
+    .summary-box{background:var(--navy);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px}
+    .summary-row{display:flex;justify-content:space-between;font-size:.81rem;padding:3px 0;color:rgba(255,255,255,.6)}
+    .summary-row span:last-child{color:rgba(255,255,255,.9)}
+    .summary-row.total{border-top:1px solid rgba(255,255,255,.14);margin-top:8px;padding-top:10px;font-size:.9rem;color:var(--white)}
+    .summary-row.total span:last-child{color:var(--green)}
+
+    /* BUTTONS */
+    .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:var(--radius);border:none;font-family:'Questrial',sans-serif;font-size:.88rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:opacity .15s,transform .1s;margin-bottom:10px}
+    .btn:active{transform:scale(.98);opacity:.88}
+    .btn-primary{background:var(--green);color:var(--navy)}
+    .btn-danger{background:#fdecea;color:var(--danger);border:1.5px solid #f5c6c2}
+    .btn-secondary{background:var(--bg);color:var(--muted);border:1.5px solid var(--border)}
+
+    /* TOAST */
+    #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:var(--white);font-size:.85rem;padding:10px 20px;border-radius:30px;border-left:4px solid var(--green);z-index:9999;transition:transform .3s ease;white-space:nowrap;pointer-events:none;box-shadow:0 4px 16px rgba(4,28,66,.22)}
+    #toast.show{transform:translateX(-50%) translateY(0)}
+
+    /* DEV */
+    #dev-overlay{position:fixed;inset:0;background:rgba(4,28,66,.7);z-index:500;display:none;align-items:center;justify-content:center}
+    #dev-overlay.open{display:flex}
+    .dev-modal{background:var(--surface);border-radius:12px;padding:28px 24px;width:min(340px,90vw);box-shadow:0 8px 32px rgba(4,28,66,.3)}
+    .dev-artikel-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.84rem}
+    .dev-artikel-row:last-child{border-bottom:none}
+    .dev-artikel-row .info{flex:1;min-width:0}
+    .dev-artikel-row .info span{display:block;font-size:.7rem;color:var(--muted)}
+    .csv-info{background:#f0f5d6;border:1px solid var(--green);border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:.78rem;color:var(--anthracite);line-height:1.7}
+    .csv-info code{background:rgba(0,0,0,.08);padding:1px 5px;border-radius:3px;font-family:monospace;font-size:.82rem}
+  </style>
+</head>
+<body>
+
+<div class="drawer-overlay" id="overlay" onclick="closeDrawer()"></div>
+
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="drawer-logo-icon"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMy4wLjMsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCIgWw0KCTwhRU5USVRZIG5zX2V4dGVuZCAiaHR0cDovL25zLmFkb2JlLmNvbS9FeHRlbnNpYmlsaXR5LzEuMC8iPg0KCTwhRU5USVRZIG5zX2FpICJodHRwOi8vbnMuYWRvYmUuY29tL0Fkb2JlSWxsdXN0cmF0b3IvMTAuMC8iPg0KCTwhRU5USVRZIG5zX2dyYXBocyAiaHR0cDovL25zLmFkb2JlLmNvbS9HcmFwaHMvMS4wLyI+DQoJPCFFTlRJVFkgbnNfdmFycyAiaHR0cDovL25zLmFkb2JlLmNvbS9WYXJpYWJsZXMvMS4wLyI+DQoJPCFFTlRJVFkgbnNfaW1yZXAgImh0dHA6Ly9ucy5hZG9iZS5jb20vSW1hZ2VSZXBsYWNlbWVudC8xLjAvIj4NCgk8IUVOVElUWSBuc19zZncgImh0dHA6Ly9ucy5hZG9iZS5jb20vU2F2ZUZvcldlYi8xLjAvIj4NCgk8IUVOVElUWSBuc19jdXN0b20gImh0dHA6Ly9ucy5hZG9iZS5jb20vR2VuZXJpY0N1c3RvbU5hbWVzcGFjZS8xLjAvIj4NCgk8IUVOVElUWSBuc19hZG9iZV94cGF0aCAiaHR0cDovL25zLmFkb2JlLmNvbS9YUGF0aC8xLjAvIj4NCl0+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zOng9IiZuc19leHRlbmQ7IiB4bWxuczppPSImbnNfYWk7IiB4bWxuczpncmFwaD0iJm5zX2dyYXBoczsiDQoJIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMjgzNSAyODM1Ig0KCSBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAyODM1IDI4MzU7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsOiMwNDFDNDI7fQ0KCS5zdDF7Y2xpcC1wYXRoOnVybCgjU1ZHSURfMl8pO30NCgkuc3Qye2NsaXAtcGF0aDp1cmwoI1NWR0lEXzRfKTtmaWxsOiNBMkM0NEM7fQ0KPC9zdHlsZT4NCjxtZXRhZGF0YT4NCgk8c2Z3ICB4bWxucz0iJm5zX3NmdzsiPg0KCQk8c2xpY2VzPjwvc2xpY2VzPg0KCQk8c2xpY2VTb3VyY2VCb3VuZHMgIGJvdHRvbUxlZnRPcmlnaW49InRydWUiIGhlaWdodD0iNDY0OS43MyIgd2lkdGg9IjUzNjEiIHg9Ii0xMzk3IiB5PSItMzY2OC43MyI+PC9zbGljZVNvdXJjZUJvdW5kcz4NCgk8L3Nmdz4NCjwvbWV0YWRhdGE+DQo8cmVjdCB4PSItMzIiIHk9Ii0zMiIgY2xhc3M9InN0MCIgd2lkdGg9IjI4OTUiIGhlaWdodD0iMjg5NSIvPg0KPGc+DQoJPGc+DQoJCTxkZWZzPg0KCQkJPHJlY3QgaWQ9IlNWR0lEXzFfIiB4PSItMTM5NyIgeT0iLTk4MSIgd2lkdGg9IjUzNjEiIGhlaWdodD0iNDY0OS43MyIvPg0KCQk8L2RlZnM+DQoJCTxjbGlwUGF0aCBpZD0iU1ZHSURfMl8iPg0KCQkJPHVzZSB4bGluazpocmVmPSIjU1ZHSURfMV8iICBzdHlsZT0ib3ZlcmZsb3c6dmlzaWJsZTsiLz4NCgkJPC9jbGlwUGF0aD4NCgkJPGcgY2xhc3M9InN0MSI+DQoJCQk8ZGVmcz4NCgkJCQk8cmVjdCBpZD0iU1ZHSURfM18iIHg9Ii0xMzk3IiB5PSItOTgxIiB3aWR0aD0iNTM2MSIgaGVpZ2h0PSI0NjQ5LjczIi8+DQoJCQk8L2RlZnM+DQoJCQk8Y2xpcFBhdGggaWQ9IlNWR0lEXzRfIj4NCgkJCQk8dXNlIHhsaW5rOmhyZWY9IiNTVkdJRF8zXyIgIHN0eWxlPSJvdmVyZmxvdzp2aXNpYmxlOyIvPg0KCQkJPC9jbGlwUGF0aD4NCgkJCTxwYXRoIGNsYXNzPSJzdDIiIGQ9Ik02ODEuNzUsMTQ4My40MWMyNDAuOTEsMjExLjA1LDUyMy4xMywzNzQuMTMsMTAwNC4yMyw0OTguOTRjMzg5LjczLDEwMS4xLDc2MS43MSw0NC4wMyw3NjEuNzEsNDQuMDMNCgkJCQlsMjQuNTksMzYzLjI1YzAsMC00ODQuNTEsNjQuOTItOTM5Ljc5LTcxLjE1Yy00NTUuMjgtMTM2LjA1LTgyNS4wMy0zMzYuMTMtMTAwNy40My00ODUuMjlMNjgxLjc1LDE0ODMuNDF6Ii8+DQoJCQk8cGF0aCBjbGFzcz0ic3QyIiBkPSJNNDIzLjgxLDEwMjMuOTJjMTQwLjgzLDE1NS4yMSwzODcuOTcsMzg4LjM4LDc1Ny43LDU2Ny4wM2MzMTYuNDUsMTUyLjg4LDYwNC42MSwyMDguNzksNzk5LjUsMjMwLjg2DQoJCQkJbDU3LjcyLTEwNTUuNjJjMCwwLTQwMi42Mi05NS41My04MjguOC00ODMuNTdsLTI0MC4zOSw1MzAuNmMwLDAsMTQ1LDE0NS4xMSwzMTEuMjgsMjI1LjM3bDYwLjIxLTE5NS4zOA0KCQkJCWMwLDAsMTc4LjI4LDEwOS44MywzMjMuNjMsMTcxLjlsLTYzLjM5LDM1NC44MWMwLDAtNTMxLjg5LTEzOC4wMS05NzkuNDctNjczLjgzTDQyMy44MSwxMDIzLjkyeiIvPg0KCQk8L2c+DQoJPC9nPg0KPC9nPg0KPC9zdmc+DQo=" style="width:28px;height:28px;object-fit:contain;border-radius:4px;" /></div>
+    <div>
+      <div class="drawer-title">emondt</div>
+      <div class="drawer-subtitle">Materiaal bestellen</div>
+    </div>
+  </div>
+  <div class="drawer-section-label">Artikelcategorieën</div>
+  <div class="drawer-item active" id="di-all" onclick="filterCategorie(null)"><span class="di-icon">📋</span> Alle artikelen</div>
+  <div class="drawer-divider"></div>
+  <div id="drawer-cat-lijst"></div>
+  <div class="drawer-spacer"></div>
+  <div class="drawer-bottom">
+    <div class="drawer-divider"></div>
+    <div class="drawer-item" onclick="openVrijArtikel()"><span class="di-icon">✏️</span> Vrij artikel toevoegen</div>
+    <div class="drawer-divider"></div>
+    <div class="drawer-item" onclick="openDev()"><span class="di-icon">⚙️</span> Beheer</div>
+  </div>
+</div>
+
+<header>
+  <div class="header-left">
+    <div class="hamburger" id="hamburger" onclick="toggleDrawer()">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="logo-wrap">
+      <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMy4wLjMsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCIgWw0KCTwhRU5USVRZIG5zX2V4dGVuZCAiaHR0cDovL25zLmFkb2JlLmNvbS9FeHRlbnNpYmlsaXR5LzEuMC8iPg0KCTwhRU5USVRZIG5zX2FpICJodHRwOi8vbnMuYWRvYmUuY29tL0Fkb2JlSWxsdXN0cmF0b3IvMTAuMC8iPg0KCTwhRU5USVRZIG5zX2dyYXBocyAiaHR0cDovL25zLmFkb2JlLmNvbS9HcmFwaHMvMS4wLyI+DQoJPCFFTlRJVFkgbnNfdmFycyAiaHR0cDovL25zLmFkb2JlLmNvbS9WYXJpYWJsZXMvMS4wLyI+DQoJPCFFTlRJVFkgbnNfaW1yZXAgImh0dHA6Ly9ucy5hZG9iZS5jb20vSW1hZ2VSZXBsYWNlbWVudC8xLjAvIj4NCgk8IUVOVElUWSBuc19zZncgImh0dHA6Ly9ucy5hZG9iZS5jb20vU2F2ZUZvcldlYi8xLjAvIj4NCgk8IUVOVElUWSBuc19jdXN0b20gImh0dHA6Ly9ucy5hZG9iZS5jb20vR2VuZXJpY0N1c3RvbU5hbWVzcGFjZS8xLjAvIj4NCgk8IUVOVElUWSBuc19hZG9iZV94cGF0aCAiaHR0cDovL25zLmFkb2JlLmNvbS9YUGF0aC8xLjAvIj4NCl0+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zOng9IiZuc19leHRlbmQ7IiB4bWxuczppPSImbnNfYWk7IiB4bWxuczpncmFwaD0iJm5zX2dyYXBoczsiDQoJIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMjgzNSAyODM1Ig0KCSBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAyODM1IDI4MzU7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsOiMwNDFDNDI7fQ0KCS5zdDF7Y2xpcC1wYXRoOnVybCgjU1ZHSURfMl8pO30NCgkuc3Qye2NsaXAtcGF0aDp1cmwoI1NWR0lEXzRfKTtmaWxsOiNBMkM0NEM7fQ0KPC9zdHlsZT4NCjxtZXRhZGF0YT4NCgk8c2Z3ICB4bWxucz0iJm5zX3NmdzsiPg0KCQk8c2xpY2VzPjwvc2xpY2VzPg0KCQk8c2xpY2VTb3VyY2VCb3VuZHMgIGJvdHRvbUxlZnRPcmlnaW49InRydWUiIGhlaWdodD0iNDY0OS43MyIgd2lkdGg9IjUzNjEiIHg9Ii0xMzk3IiB5PSItMzY2OC43MyI+PC9zbGljZVNvdXJjZUJvdW5kcz4NCgk8L3Nmdz4NCjwvbWV0YWRhdGE+DQo8cmVjdCB4PSItMzIiIHk9Ii0zMiIgY2xhc3M9InN0MCIgd2lkdGg9IjI4OTUiIGhlaWdodD0iMjg5NSIvPg0KPGc+DQoJPGc+DQoJCTxkZWZzPg0KCQkJPHJlY3QgaWQ9IlNWR0lEXzFfIiB4PSItMTM5NyIgeT0iLTk4MSIgd2lkdGg9IjUzNjEiIGhlaWdodD0iNDY0OS43MyIvPg0KCQk8L2RlZnM+DQoJCTxjbGlwUGF0aCBpZD0iU1ZHSURfMl8iPg0KCQkJPHVzZSB4bGluazpocmVmPSIjU1ZHSURfMV8iICBzdHlsZT0ib3ZlcmZsb3c6dmlzaWJsZTsiLz4NCgkJPC9jbGlwUGF0aD4NCgkJPGcgY2xhc3M9InN0MSI+DQoJCQk8ZGVmcz4NCgkJCQk8cmVjdCBpZD0iU1ZHSURfM18iIHg9Ii0xMzk3IiB5PSItOTgxIiB3aWR0aD0iNTM2MSIgaGVpZ2h0PSI0NjQ5LjczIi8+DQoJCQk8L2RlZnM+DQoJCQk8Y2xpcFBhdGggaWQ9IlNWR0lEXzRfIj4NCgkJCQk8dXNlIHhsaW5rOmhyZWY9IiNTVkdJRF8zXyIgIHN0eWxlPSJvdmVyZmxvdzp2aXNpYmxlOyIvPg0KCQkJPC9jbGlwUGF0aD4NCgkJCTxwYXRoIGNsYXNzPSJzdDIiIGQ9Ik02ODEuNzUsMTQ4My40MWMyNDAuOTEsMjExLjA1LDUyMy4xMywzNzQuMTMsMTAwNC4yMyw0OTguOTRjMzg5LjczLDEwMS4xLDc2MS43MSw0NC4wMyw3NjEuNzEsNDQuMDMNCgkJCQlsMjQuNTksMzYzLjI1YzAsMC00ODQuNTEsNjQuOTItOTM5Ljc5LTcxLjE1Yy00NTUuMjgtMTM2LjA1LTgyNS4wMy0zMzYuMTMtMTAwNy40My00ODUuMjlMNjgxLjc1LDE0ODMuNDF6Ii8+DQoJCQk8cGF0aCBjbGFzcz0ic3QyIiBkPSJNNDIzLjgxLDEwMjMuOTJjMTQwLjgzLDE1NS4yMSwzODcuOTcsMzg4LjM4LDc1Ny43LDU2Ny4wM2MzMTYuNDUsMTUyLjg4LDYwNC42MSwyMDguNzksNzk5LjUsMjMwLjg2DQoJCQkJbDU3LjcyLTEwNTUuNjJjMCwwLTQwMi42Mi05NS41My04MjguOC00ODMuNTdsLTI0MC4zOSw1MzAuNmMwLDAsMTQ1LDE0NS4xMSwzMTEuMjgsMjI1LjM3bDYwLjIxLTE5NS4zOA0KCQkJCWMwLDAsMTc4LjI4LDEwOS44MywzMjMuNjMsMTcxLjlsLTYzLjM5LDM1NC44MWMwLDAtNTMxLjg5LTEzOC4wMS05NzkuNDctNjczLjgzTDQyMy44MSwxMDIzLjkyeiIvPg0KCQk8L2c+DQoJPC9nPg0KPC9nPg0KPC9zdmc+DQo=" style="width:36px;height:36px;object-fit:contain;border-radius:4px;" />
+      <div class="logo-text">
+        <span class="logo-name">emondt</span>
+        <span class="logo-sub">Materiaal bestellen</span>
+      </div>
+    </div>
+  </div>
+  <button class="cart-btn" onclick="showTab('winkelwagen')">
+    🛒 <span id="cart-count-badge">0 items</span>
+  </button>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('welkom')">🏠 Welkom</div>
+  <div class="tab" onclick="showTab('artikelen')">📦 Artikelen</div>
+  <div class="tab" onclick="showTab('info')">👷 Monteur</div>
+</div>
+
+<div class="cat-banner" id="cat-banner">
+  <span id="cat-banner-text"></span>
+  <button onclick="filterCategorie(null)">✕ Wis filter</button>
+</div>
+
+<!-- TAB: WELKOM -->
+<div class="section" id="tab-welkom" style="display:block">
+  <div class="landing-hero">
+    <h1>Welkom</h1>
+    <p>Hieronder een korte beschrijving hoe deze omgeving te gebruiken</p>
+  </div>
+  <div style="background:#e8471a;border-radius:var(--radius);padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:14px">
+    <div style="font-size:1.8rem;flex-shrink:0">⏰</div>
+    <div>
+      <div style="color:#fff;font-size:.92rem;font-weight:600;letter-spacing:.02em">Bestel vóór 14:00 uur</div>
+      <div style="color:rgba(255,255,255,.85);font-size:.78rem;margin-top:3px;line-height:1.5">Bestellingen die na 14:00 binnenkomen worden de <strong style="color:#fff">volgende werkdag</strong> verwerkt. Weekenden en feestdagen worden overgeslagen.</div>
+    </div>
+  </div>
+  <div class="landing-steps">
+    <div class="landing-step">
+      <div class="step-num">1</div>
+      <div class="step-info">
+        <h3>Monteurgegevens invullen</h3>
+        <p>Ga naar het tabblad <strong>Monteur</strong> en vul je naam, afdeling, projectnaam en afleveradres in. Deze worden opgeslagen voor volgend gebruik.</p>
+      </div>
+    </div>
+    <div class="landing-step">
+      <div class="step-num">2</div>
+      <div class="step-info">
+        <h3>Artikelen selecteren</h3>
+        <p>Ga naar <strong>Artikelen</strong>. Gebruik het hamburgermenu links om te filteren op categorie, of zoek direct op naam of artikelnummer. Klik op een artikel of gebruik + / − om het aantal in te stellen.</p>
+      </div>
+    </div>
+    <div class="landing-step">
+      <div class="step-num">3</div>
+      <div class="step-info">
+        <h3>Bestelling versturen</h3>
+        <p>Tik rechtsbovenin op de 🛒 winkelmandknop om je bestelling te bekijken. Kies een gewenste leverdatum en tik op <strong>Bestelling versturen</strong>.</p>
+      </div>
+    </div>
+    <div class="landing-step">
+      <div class="step-num">4</div>
+      <div class="step-info">
+        <h3>Vrij artikel toevoegen</h3>
+        <p>Staat een artikel niet in de lijst? Tik op het hamburgermenu links en kies <strong>Vrij artikel toevoegen</strong>. Vul de omschrijving en het aantal in en voeg het direct toe aan je bestelling.</p>
+      </div>
+    </div>
+  </div>
+  <button class="landing-start-btn" onclick="showTab('artikelen')">
+    📦 Ga naar artikelen →
+  </button>
+
+  <div style="margin-top:14px;padding:14px 16px;background:var(--navy);border-radius:var(--radius);display:flex;align-items:flex-start;gap:12px">
+    <div style="font-size:1.5rem;flex-shrink:0;margin-top:2px">📱</div>
+    <div>
+      <div style="color:var(--green);font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Tip</div>
+      <div style="color:var(--white);font-size:.85rem;line-height:1.6">Wist je dat je deze omgeving ook als app kunt installeren?</div>
+      <div style="color:rgba(255,255,255,.65);font-size:.76rem;margin-top:6px;line-height:1.6">
+        <strong style="color:rgba(255,255,255,.85)">Android (Chrome):</strong> tik op de drie puntjes rechtsboven → "Toevoegen aan beginscherm"<br>
+        <strong style="color:rgba(255,255,255,.85)">iPhone / iPad (Safari):</strong> tik op het deelicoon <span style="font-size:.9rem">⎙</span> → "Zet op beginscherm"
+      </div>
+      <button onclick="triggerPwaInstall()" id="landing-install-btn" style="display:none;margin-top:10px;background:var(--green);color:var(--navy);border:none;border-radius:6px;padding:8px 16px;font-family:'Questrial',sans-serif;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer">
+        ⬇️ Nu installeren
+      </button>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:.78rem;color:var(--muted);line-height:1.6;text-align:center">
+    Heb je op- of aanmerkingen over het gebruik van deze app of artikelen die ontbreken?<br>
+    Stuur dan even een mailtje naar <a href="mailto:r.brinks@emondt.nl" style="color:var(--green);text-decoration:none">r.brinks@emondt.nl</a>
+  </div>
+</div>
+
+<!-- TAB: MONTEUR INFO -->
+<div class="section" id="tab-info" style="display:none">
+  <div class="info-card">
+    <h2>Monteur gegevens</h2>
+    <div class="field-row">
+      <label>Naam <span class="req">*</span></label>
+      <input type="text" id="naam" placeholder="Jan de Vries" oninput="saveInfo()" />
+    </div>
+    <div class="field-row">
+      <label>Telefoonnummer <span class="req">*</span></label>
+      <input type="tel" id="telefoon" placeholder="Jouw telefoonnummer" oninput="saveInfo()" />
+    </div>
+    <div class="field-row">
+      <label>Afdeling <span class="req">*</span></label>
+      <select id="afdeling" onchange="saveInfo()">
+        <option value="" disabled selected>Selecteer afdeling...</option>
+        <option value="Multiclima">Multiclima</option>
+        <option value="Koeltechniek">Koeltechniek</option>
+        <option value="Werkplaats">Werkplaats</option>
+      </select>
+    </div>
+    <div class="field-row-2">
+      <div class="field-row">
+        <label>Projectnummer</label>
+        <input type="text" id="projectnummer" placeholder="P2600000" oninput="saveInfo()" />
+      </div>
+      <div class="field-row">
+        <label>Projectnaam <span class="req">*</span></label>
+        <input type="text" id="projectnaam" placeholder="Renovatie Hal B" oninput="saveInfo()" />
+      </div>
+    </div>
+    <div class="field-row">
+      <label>Afleveradres <span class="req">*</span></label>
+      <select id="locatie-keuze" onchange="locatieKeuze(this)" style="margin-bottom:6px">
+        <option value="" disabled selected>Selecteer afleveradres...</option>
+        <option value="op de klus">Op de klus</option>
+        <option value="op de zaak">Op de zaak</option>
+        <option value="vrij">Vul in...</option>
+      </select>
+      <input type="text" id="locatie" placeholder="Vul afleveradres in..." oninput="saveInfo()" style="display:none" />
+    </div>
+  </div>
+  <div class="info-card">
+    <h2>Verzenden naar</h2>
+    <div class="field-row">
+      <label>CC naar monteur (optioneel)</label>
+      <input type="email" id="ontvanger2" placeholder="jouw e-mailadres" oninput="saveInfo()" />
+    </div>
+    <div class="field-row">
+      <label>Opmerkingen (optioneel)</label>
+      <textarea id="opmerkingen" placeholder="Spoed, graag voor 14:00 leveren..." oninput="saveInfo()"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: ARTIKELEN -->
+<div class="section" id="tab-artikelen" style="display:none">
+  <div class="search-bar">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="zoek" placeholder="Zoek op naam of artikelnummer..." oninput="applyFilters()" />
+  </div>
+  <div class="artikel-grid" id="artikel-lijst"></div>
+</div>
+
+<!-- TAB: WINKELWAGEN -->
+<div class="section" id="tab-winkelwagen" style="display:none">
+  <div id="cart-content"></div>
+</div>
+
+<!-- DEV BEHEER PAGINA -->
+<div class="section" id="tab-dev" style="display:none">
+
+  <div class="info-card">
+    <h2>🔗 Google Sheets koppeling</h2>
+    <div style="font-size:.78rem;color:var(--muted);margin-bottom:12px;line-height:1.6">
+      De Sheets-URL is ingebakken in de code. Gebruik de testknop om de verbinding te controleren.
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="testVerbinding()" style="margin-bottom:0;flex:1">🔍 Verbinding testen</button>
+      <button class="btn btn-primary" onclick="herlaadArtikelen()" style="margin-bottom:0;flex:1">🔄 Artikelen herladen</button>
+    </div>
+    <div style="margin-top:8px">
+      <button class="btn btn-secondary" onclick="testBestellingLog()" style="margin-bottom:0">📋 Test bestelling loggen</button>
+    </div>
+    <div id="sheets-status" style="margin-top:8px;font-size:.78rem"></div>
+  </div>
+
+  <div class="info-card">
+    <h2>🎨 Categorie-iconen instellen</h2>
+    <div style="font-size:.78rem;color:var(--muted);margin-bottom:12px;line-height:1.6">
+      Kies per categorie een emoji-icoon. Dit wordt opgeslagen in de browser.
+    </div>
+    <div id="cat-icon-lijst"></div>
+    <button class="btn btn-primary" onclick="slaIconenOp()" style="margin-top:10px;margin-bottom:0">💾 Iconen opslaan</button>
+  </div>
+
+  <div class="info-card">
+    <h2>➕ Artikel toevoegen aan database</h2>
+    <div style="font-size:.84rem;color:var(--muted);line-height:1.6;margin-bottom:14px">
+      Artikelen worden beheerd via Google Sheets. Klik op de knop hieronder om de spreadsheet te openen en artikelen toe te voegen of aan te passen.
+    </div>
+    <a href="https://docs.google.com/spreadsheets/d/1nVAoYUlm_MGBsFLvH2QsZmuZooqkxbsibreMykhPGws/edit" target="_blank" style="text-decoration:none">
+      <button class="btn btn-primary" style="margin-bottom:0">
+        📊 Open Google Spreadsheet
+      </button>
+    </a>
+  </div>
+
+  <div class="info-card">
+    <h2>🗑 Artikel zoeken &amp; verwijderen</h2>
+    <div class="field-row">
+      <label>Zoek op naam of artikelnummer</label>
+      <input type="text" id="dev-zoek" placeholder="bijv. PVC bocht of 6923049..." oninput="devZoek()" />
+    </div>
+    <div id="dev-zoek-resultaten" style="margin-top:8px"></div>
+  </div>
+
+  <button class="btn btn-secondary" onclick="showTab('artikelen')" style="margin-top:4px">← Terug</button>
+</div>
+
+<!-- DEV LOGIN -->
+<div id="dev-overlay">
+  <div class="dev-modal">
+    <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.14em;color:var(--green);margin-bottom:12px">🔐 Beheer toegang</div>
+    <div style="font-size:.84rem;color:var(--muted);margin-bottom:14px">Voer het beheerwachtwoord in.</div>
+    <input type="password" id="dev-pw" placeholder="Wachtwoord..." onkeydown="if(event.key==='Enter')checkPw()"
+      style="width:100%;margin-bottom:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:6px;color:var(--text);font-family:Questrial,sans-serif;font-size:.92rem;padding:10px 12px;outline:none" />
+    <div id="dev-pw-err" style="color:var(--danger);font-size:.75rem;margin-bottom:10px;display:none">Onjuist wachtwoord</div>
+    <div style="display:flex;gap:8px">
+      <button onclick="checkPw()" style="flex:1;padding:11px;background:var(--green);color:var(--navy);border:none;border-radius:6px;font-family:Questrial,sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer">Inloggen</button>
+      <button onclick="document.getElementById('dev-overlay').classList.remove('open')" style="flex:1;padding:11px;background:var(--bg);color:var(--muted);border:1.5px solid var(--border);border-radius:6px;font-family:Questrial,sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer">Annuleren</button>
+    </div>
+  </div>
+</div>
+
+<!-- PWA installatiebanner (zichtbaar na beforeinstallprompt) -->
+<div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);border-top:3px solid var(--green);padding:12px 16px;z-index:9000;align-items:center;gap:12px;box-shadow:0 -4px 16px rgba(4,28,66,.25)">
+  <div style="flex:1;font-size:.82rem;color:var(--white);line-height:1.5">
+    <strong style="color:var(--green)">Installeer de app</strong><br>
+    <span style="color:rgba(255,255,255,.75)">Voeg toe aan beginscherm voor snelle toegang</span>
+  </div>
+  <button id="pwa-install-btn" style="background:var(--green);color:var(--navy);border:none;border-radius:6px;padding:9px 16px;font-family:'Questrial',sans-serif;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;flex-shrink:0">Installeren</button>
+  <button onclick="document.getElementById('pwa-banner').style.display='none';localStorage.setItem('pwa-banner-dismissed','1')" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.2rem;cursor:pointer;padding:4px;flex-shrink:0">✕</button>
+</div>
+
+<!-- Vrij artikel modal -->
+<div id="vrij-overlay" style="display:none;position:fixed;inset:0;background:rgba(4,28,66,.6);z-index:600;align-items:flex-end;justify-content:center">
+  <div style="background:var(--surface);border-radius:14px 14px 0 0;width:100%;max-width:480px;padding:24px 20px 32px;box-shadow:0 -8px 32px rgba(4,28,66,.2)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div>
+        <div style="font-size:1rem;color:var(--anthracite);font-weight:600">✏️ Vrij artikel toevoegen</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:2px">Artikel staat niet in de lijst?</div>
+      </div>
+      <button id="vrij-sluit-btn" style="background:var(--bg);border:1.5px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">✕</button>
+    </div>
+    <div class="field-row">
+      <label>Artikelnummer (optioneel)</label>
+      <input type="text" id="custom-code" placeholder="bijv. 99XX0001" />
+    </div>
+    <div class="field-row">
+      <label>Omschrijving <span class="req">*</span></label>
+      <input type="text" id="custom-naam" placeholder="Omschrijf het artikel..." />
+    </div>
+    <div class="field-row" style="margin-bottom:20px">
+      <label>Aantal <span class="req">*</span></label>
+      <input type="number" id="custom-qty" min="1" value="1" />
+    </div>
+    <button id="vrij-toevoegen-btn" class="btn btn-primary" style="margin-bottom:0">➕ Toevoegen aan bestelling</button>
+  </div>
+</div>
+
+<div id="toast">✓ Toegevoegd</div>
+
+<script>
+// ── GOOGLE SHEETS API ────────────────────────────────────────
+// Vervang de URL hieronder met jouw Web App URL na deployment
+const SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbxs_wOCwvD3Go_wKEiBB2LgbdeNfmE5UW8W0XY4scu6lOe1rCP40_HGL9ezpEk5Hn09ng/exec';
+
+
+let ARTIKELEN = [];  // wordt geladen vanuit Google Sheets (of fallback)
+
+// Dynamisch gevuld na laden artikelen
+let CAT_IDS = {};
+let ICONS = {};
+
+// Standaard iconen als fallback
+const ICON_DEFAULTS = {
+  'Afvoermaterialen':'🔧','Bevestigingsmateriaal':'🔩','Diversen':'📦',
+  'Elektra':'⚡','Isolatie':'🧱','Koeltechnische hulpstukken':'❄️',
+  'Koperleiding':'🟠','Tape & Lijmen':'🎗️','Waterzijdig':'💧'
+};
+
+// Alle beschikbare emoji-iconen om uit te kiezen
+const ICOON_OPTIES = [
+  '🔧','🔩','📦','⚡','🧱','❄️','🟠','🎗️','💧','🔨','🪛','🔌','💡',
+  '🏗️','🪝','🧲','🔑','🛠️','📐','📏','🪚','⚙️','🔗','🪣','🧪','🔋',
+  '🌡️','💨','🔥','❄','🌊','🏭','📦','🗜️','🔒','🪜','🧯','🪤'
+];
+
+let cart = {};
+
+function saveCart() {
+  try { localStorage.setItem('emondt_cart', JSON.stringify(cart)); } catch(e) {}
+}
+function loadCart() {
+  try {
+    const opgeslagen = localStorage.getItem('emondt_cart');
+    if (opgeslagen) cart = JSON.parse(opgeslagen);
+  } catch(e) {}
+  updateBadge();
+}
+let activeCat = null;
+let customTeller = 0;
+
+// ── VRIJ ARTIKEL ─────────────────────────────────────────────
+function openVrijArtikel() {
+  closeDrawer();
+  document.getElementById('vrij-overlay').style.display = 'flex';
+  setTimeout(() => document.getElementById('custom-naam').focus(), 100);
+}
+function sluitVrijArtikel() {
+  document.getElementById('vrij-overlay').style.display = 'none';
+  document.getElementById('custom-naam').value = '';
+  document.getElementById('custom-code').value = '';
+  document.getElementById('custom-qty').value = '1';
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+window.onload = () => {
+  loadInfo();
+  loadCart();
+  laadOpgeslagenIconen();
+  document.getElementById('di-all')?.classList.add('active');
+  showTab('welkom');
+  laadArtikelenUitSheets();
+  document.getElementById('vrij-sluit-btn').addEventListener('click', sluitVrijArtikel);
+  document.getElementById('vrij-overlay').addEventListener('click', function(e) { if (e.target === this) sluitVrijArtikel(); });
+  document.getElementById('vrij-toevoegen-btn').addEventListener('click', customArtikelToevoegen);
+};
+
+// ── LADEN UIT GOOGLE SHEETS ───────────────────────────────────
+function laadArtikelenUitSheets() {
+  const lijst = document.getElementById('artikel-lijst');
+
+  // ── Laag 1: sessionStorage (snelst, huidige browsersessie) ──
+  try {
+    const sesCache = sessionStorage.getItem('emondt_artikelen_sessie');
+    if (sesCache) {
+      ARTIKELEN = JSON.parse(sesCache);
+      bouwDrawerCats();
+      renderArtikelen(ARTIKELEN);
+      console.log('[Cache] Sessiecache geladen:', ARTIKELEN.length, 'artikelen');
+      // Ververs op achtergrond zonder laad-indicator
+      fetchSheets(false);
+      return;
+    }
+  } catch(e) {}
+
+  // ── Laag 2: localStorage (tot 24 uur geldig) ─────────────
+  if (lijst) lijst.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:.86rem">📡 Artikelen laden...</div>';
+  try {
+    const cached = localStorage.getItem('emondt_artikelen_cache');
+    const ts     = localStorage.getItem('emondt_artikelen_ts');
+    const oud    = !ts || (Date.now() - parseInt(ts)) > 86400000; // 24 uur
+    if (cached && !oud) {
+      ARTIKELEN = JSON.parse(cached);
+      // Zet ook in sessiecache
+      try { sessionStorage.setItem('emondt_artikelen_sessie', cached); } catch(e) {}
+      bouwDrawerCats();
+      renderArtikelen(ARTIKELEN);
+      console.log('[Cache] LocalStorage cache geladen:', ARTIKELEN.length, 'artikelen');
+      // Ververs op achtergrond
+      fetchSheets(false);
+      return;
+    }
+  } catch(e) {}
+
+  // ── Laag 3: Sheets ophalen ────────────────────────────────
+  fetchSheets(true);
+}
+
+function fetchSheets(toonLaadindicator) {
+  if (!SHEETS_API_URL || SHEETS_API_URL === 'JOUW_WEBAPP_URL_HIER') {
+    // Geen URL — toon cache als die er is, anders melding
+    const cached = (() => { try { return localStorage.getItem('emondt_artikelen_cache'); } catch(e){ return null; } })();
+    if (cached) {
+      ARTIKELEN = JSON.parse(cached);
+      bouwDrawerCats();
+      renderArtikelen(ARTIKELEN);
+      showToast('📦 Gecachte database geladen');
+    } else {
+      const lijst = document.getElementById('artikel-lijst');
+      if (lijst) lijst.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:.86rem">⚙️ Koppel de Google Sheets API in de beheerpagina (hamburgermenu → Beheer).</div>';
+    }
+    return;
+  }
+
+  fetch(SHEETS_API_URL + '?actie=lezen&t=' + Date.now())
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'ok' && Array.isArray(data.artikelen)) {
+        ARTIKELEN = data.artikelen.map(a => ({
+          code:        a.code        || '',
+          naam:        a.naam        || '',
+          cat:         a.cat         || '',
+          subcat:      a.subcat      || undefined,
+          eenheid:     a.eenheid     || 'stuk',
+          leverancier: a.leverancier || '',
+          warning:     a.warning     || '',
+          verpakking:  a.verpakking  || '',
+          icon:        ICONS[a.cat] || ICON_DEFAULTS[a.cat] || '📦',
+        })).filter(a => a.code && a.naam);
+
+        // Opslaan in beide caches
+        const json = JSON.stringify(ARTIKELEN);
+        try {
+          localStorage.setItem('emondt_artikelen_cache', json);
+          localStorage.setItem('emondt_artikelen_ts', Date.now().toString());
+          sessionStorage.setItem('emondt_artikelen_sessie', json);
+        } catch(e) {}
+
+        bouwDrawerCats();
+        renderArtikelen(ARTIKELEN);
+        console.log('[Sheets] Geladen:', ARTIKELEN.length, 'artikelen');
+        if (toonLaadindicator) showToast('✓ ' + ARTIKELEN.length + ' artikelen geladen');
+      } else {
+        console.error('[Sheets] Fout:', data);
+        laadUitCache('Sheets fout: ' + (data.message || 'onbekend'));
+      }
+    })
+    .catch(err => {
+      console.error('[Sheets] Netwerkfout:', err);
+      laadUitCache('Geen verbinding met Sheets');
+    });
+}
+
+// Laad uit localStorage als noodoplossing, toon melding
+function laadUitCache(reden) {
+  try {
+    const cached = localStorage.getItem('emondt_artikelen_cache');
+    if (cached) {
+      ARTIKELEN = JSON.parse(cached);
+      try { sessionStorage.setItem('emondt_artikelen_sessie', cached); } catch(e) {}
+      bouwDrawerCats();
+      renderArtikelen(ARTIKELEN);
+      const ts = localStorage.getItem('emondt_artikelen_ts');
+      const leeftijd = ts ? Math.round((Date.now() - parseInt(ts)) / 60000) : '?';
+      showToast(`📦 Cache geladen (${leeftijd} min oud)`);
+      console.warn('[Cache] Fallback op cache vanwege:', reden);
+      return;
+    }
+  } catch(e) {}
+  // Echt niets beschikbaar
+  const lijst = document.getElementById('artikel-lijst');
+  if (lijst) lijst.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--danger);font-size:.86rem">📵 ${reden} — geen cache beschikbaar.</div>`;
+  showToast('📵 Geen data beschikbaar');
+}
+
+// ── DRAWER ────────────────────────────────────────────────────
+function toggleDrawer() {
+  const d = document.getElementById('drawer'), o = document.getElementById('overlay'), h = document.getElementById('hamburger');
+  const open = d.classList.toggle('open');
+  o.classList.toggle('open', open); h.classList.toggle('open', open);
+}
+function closeDrawer() {
+  ['drawer','overlay','hamburger'].forEach(id => document.getElementById(id).classList.remove('open'));
+}
+
+// ── CATEGORIE FILTER ──────────────────────────────────────────
+function filterCategorie(cat) {
+  activeCat = cat; closeDrawer();
+  document.querySelectorAll('.drawer-item').forEach(el => el.classList.remove('active'));
+  if (cat) {
+    const id = CAT_IDS[cat];
+    if (id) document.getElementById(id)?.classList.add('active');
+  } else {
+    document.getElementById('di-all')?.classList.add('active');
+  }
+  const banner = document.getElementById('cat-banner');
+  if (cat) { document.getElementById('cat-banner-text').textContent = cat; banner.classList.add('visible'); }
+  else { banner.classList.remove('visible'); }
+  showTab('artikelen');
+  applyFilters();
+}
+
+// ── DRAWER CATEGORIEËN DYNAMISCH OPBOUWEN ─────────────────────
+function bouwDrawerCats() {
+  const cats = [...new Set(ARTIKELEN.map(a => a.cat))].filter(Boolean).sort();
+  const container = document.getElementById('drawer-cat-lijst');
+  if (!container) return;
+
+  CAT_IDS = {};
+  container.innerHTML = '';
+
+  cats.forEach(cat => {
+    const id = 'di-cat-' + cat.replace(/[^a-zA-Z0-9]/g, '-');
+    CAT_IDS[cat] = id;
+    const icon = ICONS[cat] || ICON_DEFAULTS[cat] || '📦';
+    const el = document.createElement('div');
+    el.className = 'drawer-item';
+    el.id = id;
+    el.innerHTML = `<span class="di-icon">${icon}</span> ${cat}`;
+    el.onclick = () => filterCategorie(cat);
+    container.appendChild(el);
+  });
+
+  // Update dev categorie-dropdowns dynamisch
+  ['dev-cat'].forEach(selId => {
+    const sel = document.getElementById(selId);
+    if (!sel) return;
+    const huidig = sel.value;
+    sel.innerHTML = '<option value="">Selecteer categorie...</option>' +
+      cats.map(c => `<option value="${c}"${c===huidig?' selected':''}>${c}</option>`).join('');
+  });
+}
+
+function applyFilters() {
+  const q = document.getElementById('zoek').value.toLowerCase();
+  let lijst = activeCat ? ARTIKELEN.filter(a => a.cat === activeCat) : ARTIKELEN;
+  if (q) lijst = lijst.filter(a => a.naam.toLowerCase().includes(q) || a.code.toLowerCase().includes(q));
+  renderArtikelen(lijst);
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  const tabMap = { welkom:0, artikelen:1, info:2 };
+  if (tabMap[name] !== undefined) document.querySelectorAll('.tab')[tabMap[name]].classList.add('active');
+  document.getElementById('tab-' + name).style.display = 'block';
+  if (name === 'winkelwagen') renderCart();
+  // Wis categorie-filter als de winkelmand wordt geopend
+  if (name === 'winkelwagen' && activeCat) {
+    activeCat = null;
+    document.querySelectorAll('.drawer-item').forEach(el => el.classList.remove('active'));
+    document.getElementById('di-all').classList.add('active');
+    document.getElementById('cat-banner').classList.remove('visible');
+    document.getElementById('zoek').value = '';
+  }
+}
+
+// ── ARTIKELEN ─────────────────────────────────────────────────
+function renderArtikelen(lijst) {
+  const c = document.getElementById('artikel-lijst');
+  c.innerHTML = '';
+  if (!lijst.length) { c.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:.86rem">Geen artikelen gevonden.</div>'; return; }
+  [...new Set(lijst.map(a => a.cat))].forEach(cat => {
+    const icon = ICONS[cat] || ICON_DEFAULTS[cat] || '📦';
+    const lbl = document.createElement('div'); lbl.className = 'cat-label'; lbl.innerHTML = `<span>${icon}</span> ${cat}`; c.appendChild(lbl);
+    const catItems = lijst.filter(a => a.cat === cat);
+    const hasSubcats = catItems.some(a => a.subcat);
+    if (hasSubcats) {
+      [...new Set(catItems.map(a => a.subcat).filter(Boolean))].forEach(sub => {
+        const sl = document.createElement('div'); sl.className = 'subcat-label'; sl.textContent = sub; c.appendChild(sl);
+        catItems.filter(a => a.subcat === sub).forEach(a => renderArtikelCard(a, c));
+      });
+    } else { catItems.forEach(a => renderArtikelCard(a, c)); }
+  });
+}
+
+function renderArtikelCard(artikel, container) {
+  const qty = cart[artikel.code] || 0;
+  const heeftWarning = artikel.warning && artikel.warning.includes('*');
+  const el = document.createElement('div');
+  el.className = 'artikel-card' + (qty > 0 ? ' selected' : '');
+  el.id = 'card-' + artikel.code;
+  el.innerHTML = `
+    <div class="artikel-icon">${artikel.icon}</div>
+    <div class="artikel-info">
+      <div class="artikel-naam">${artikel.naam}</div>
+      <div class="artikel-code">${artikel.code}${artikel.leverancier ? ' · ' + artikel.leverancier : ''} · per ${artikel.eenheid}</div>
+      ${heeftWarning ? `<div class="artikel-warning"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Let op, bestellen per meter!</div>` : ''}
+    </div>
+    <div class="qty-control" onclick="event.stopPropagation()">
+      <button class="qty-btn" onclick="changeQty('${artikel.code}',-1,event)">−</button>
+      <input class="qty-val" type="number" min="0" id="qty-${artikel.code}" value="${qty}"
+        onchange="setQty('${artikel.code}',this)" onclick="this.select()" />
+      <button class="qty-btn" onclick="changeQty('${artikel.code}',1,event)">+</button>
+    </div>`;
+  el.dataset.verpakking = artikel.verpakking || '';
+  el.onclick = artikel.verpakking ? (e) => toonVerpakking(e, el) : null;
+  container.appendChild(el);
+}
+
+function toonVerpakking(e, kaart) {
+  // Klik op qty-control negeren
+  if (e.target.closest('.qty-control')) return;
+
+  // Verwijder eventuele bestaande popup
+  document.querySelectorAll('.verpakking-popup').forEach(p => p.remove());
+
+  const tekst = kaart.dataset.verpakking;
+  if (!tekst) return;
+
+  const popup = document.createElement('div');
+  popup.className = 'verpakking-popup';
+  popup.textContent = '📦 ' + tekst;
+  kaart.appendChild(popup);
+
+  // Sluit bij klik buiten
+  setTimeout(() => {
+    document.addEventListener('click', function sluiter() {
+      popup.remove();
+      document.removeEventListener('click', sluiter);
+    });
+  }, 0);
+}
+
+
+function changeQty(code, delta, e) {
+  if (e) e.stopPropagation();
+  const nieuw = Math.max(0, (cart[code] || 0) + delta);
+  _setCart(code, nieuw);
+  if (delta > 0 && nieuw === 1) {
+    const artikel = ARTIKELEN.find(a => a.code === code);
+    if (artikel && artikel.warning && artikel.warning.includes('*')) {
+      showToast('⚠️ Let op, bestellen per meter!');
+    } else {
+      showToast('✓ Toegevoegd aan bestelling');
+    }
+  }
+}
+
+function setQty(code, input) {
+  const nieuw = Math.max(0, parseInt(input.value) || 0);
+  input.value = nieuw;
+  _setCart(code, nieuw);
+}
+
+function _setCart(code, nieuw) {
+  if (nieuw === 0) delete cart[code]; else cart[code] = nieuw;
+  saveCart();
+  const qEl = document.getElementById('qty-' + code);
+  const cEl = document.getElementById('card-' + code);
+  if (qEl) qEl.value = nieuw;
+  if (cEl) cEl.classList.toggle('selected', nieuw > 0);
+  updateBadge();
+}
+
+function updateBadge() {
+  const t = Object.values(cart).reduce((s,q) => s+q, 0);
+  document.getElementById('cart-count-badge').textContent = t + ' item' + (t !== 1 ? 's' : '');
+}
+
+// ── WINKELWAGEN ───────────────────────────────────────────────
+function renderCart() {
+  const el = document.getElementById('cart-content');
+  const items = Object.entries(cart);
+  if (!items.length) {
+    el.innerHTML = `<div class="empty-cart">
+      <svg width="54" height="54" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+      </svg>
+      <p>Geen artikelen geselecteerd.<br>Ga naar <strong>Artikelen</strong> om te beginnen.</p>
+    </div>`; return;
+  }
+  let html = '', totaal = 0;
+  items.forEach(([code, qty]) => {
+    const a = ARTIKELEN.find(x => x.code === code); if (!a) return;
+    totaal += qty;
+    html += `<div class="cart-item">
+      <div class="artikel-icon" style="width:38px;height:38px;font-size:1rem;flex-shrink:0">${a.icon}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-naam">${a.naam}</div>
+        <div class="cart-item-code">${a.code}</div>
+      </div>
+      <div class="cart-qty-badge">${qty}</div>
+      <button class="remove-btn" onclick="removeItem('${code}')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>`;
+  });
+  // Leverdatum: morgen als minimum, weekenden uitschakelen
+  const today = new Date();
+  const morgen = new Date(today);
+  morgen.setDate(today.getDate() + 1);
+  // Sla weekenden over voor de minimale datum
+  while (morgen.getDay() === 0 || morgen.getDay() === 6) morgen.setDate(morgen.getDate() + 1);
+  const minDatum = morgen.toISOString().split('T')[0];
+  const opgeslagenDatum = (() => { try { return localStorage.getItem('leverdatum') || ''; } catch(e){ return ''; } })();
+  html += `<div class="date-row">
+    <label>📅 Gewenste leverdatum <span style="color:var(--green)">*</span></label>
+    <input type="date" id="leverdatum" min="${minDatum}" value="${opgeslagenDatum}" onchange="kiesLeverdatum(this)" />
+  </div>
+  <div id="weekend-waarschuwing" style="display:none;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;padding:8px 12px;font-size:.78rem;color:#856404;margin-bottom:8px">
+    ⚠️ Dit is een weekend — kies een werkdag.
+  </div>`;
+  const inf = getInfo();
+  html += `<div class="summary-box">
+    <div class="summary-row"><span>Monteur</span><span>${inf.naam||'—'}</span></div>
+    <div class="summary-row"><span>Project</span><span>${inf.projectnummer ? inf.projectnummer + (inf.projectnaam?' · '+inf.projectnaam:'') : (inf.projectnaam||'—')}</span></div>
+    <div class="summary-row"><span>Afleveradres</span><span>${inf.locatie||'—'}</span></div>
+    <div class="summary-row total"><span>Totaal</span><span>${totaal} stuks</span></div>
+  </div>
+  <button class="btn btn-primary" onclick="verstuurEmail()">
+    <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2 15 22l-4-9-9-4 20-7z"/></svg>
+    Bestelling versturen
+  </button>
+  <button class="btn btn-danger" onclick="leegMaken()">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+    Bestelling wissen
+  </button>`;
+  el.innerHTML = html;
+  // Restore leverdatum
+  const ld = document.getElementById('leverdatum');
+  if (ld) { try { ld.value = localStorage.getItem('leverdatum') || ''; } catch(e){} }
+}
+
+function kiesLeverdatum(input) {
+  const d = new Date(input.value);
+  const dag = d.getDay(); // 0=zo, 6=za
+  const waarschuwing = document.getElementById('weekend-waarschuwing');
+  if (dag === 0 || dag === 6) {
+    if (waarschuwing) waarschuwing.style.display = 'block';
+    input.setCustomValidity('Weekenden zijn niet geldig als leverdatum.');
+    input.value = '';
+    try { localStorage.removeItem('leverdatum'); } catch(e){}
+  } else {
+    if (waarschuwing) waarschuwing.style.display = 'none';
+    input.setCustomValidity('');
+    try { localStorage.setItem('leverdatum', input.value); } catch(e){}
+  }
+}
+
+function removeItem(code) {
+  delete cart[code];
+  const qEl = document.getElementById('qty-' + code);
+  const cEl = document.getElementById('card-' + code);
+  if (qEl) qEl.value = 0;
+  if (cEl) cEl.classList.remove('selected');
+  updateBadge(); renderCart();
+}
+
+function leegMaken() {
+  if (!confirm('Hele bestelling wissen?')) return;
+  cart = {};
+  try { localStorage.removeItem('emondt_cart'); } catch(e){}
+  document.querySelectorAll('.qty-val').forEach(el => el.value = 0);
+  document.querySelectorAll('.artikel-card').forEach(el => el.classList.remove('selected'));
+  updateBadge(); renderCart();
+}
+
+// ── E-MAIL ────────────────────────────────────────────────────
+function verstuurEmail() {
+  const inf = getInfo();
+  const items = Object.entries(cart);
+  if (!items.length) { alert('Voeg eerst artikelen toe.'); return; }
+
+  let leverdatum = '';
+  try { leverdatum = localStorage.getItem('leverdatum') || ''; } catch(e){}
+
+  const verplicht = [
+    {id:'naam',label:'Naam'},{id:'afdeling',label:'Afdeling'},
+    {id:'projectnaam',label:'Projectnaam'},{id:'locatie',label:'Afleveradres'},
+    {id:'telefoon',label:'Telefoonnummer'},
+  ];
+  for (const v of verplicht) {
+    if (!inf[v.id]||inf[v.id].trim()==='') {
+      alert(`Vul het verplichte veld "${v.label}" in.`); showTab('info');
+      document.getElementById(v.id).focus(); return;
+    }
+  }
+
+  // ── Leverdatum verplicht ──────────────────────────────────
+  if (!leverdatum) {
+    alert('Kies een gewenste leverdatum.');
+    showTab('winkelwagen');
+    return;
+  }
+
+  // ── Waarschuwing na 14:00 ─────────────────────────────────
+  const nu = new Date();
+  const uur = nu.getHours();
+  const minuut = nu.getMinutes();
+  if (uur >= 14) {
+    const tijdStr = `${String(uur).padStart(2,'0')}:${String(minuut).padStart(2,'0')}`;
+    if (!confirm(`⚠️ Let op: het is nu ${tijdStr}
+
+Bestellingen die na 14:00 binnenkomen worden verwerkt op de volgende werkdag.
+
+Wil je toch versturen?`)) return;
+  }
+
+  const datum = new Date().toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const projref = inf.projectnummer || inf.projectnaam || '';
+  const subject = `Materiaal bestellen${projref?' '+projref:''}${inf.projectnaam?' – '+inf.projectnaam:''} – ${inf.naam||'monteur'} – ${datum}`;
+  const to = 'rubenbrinks1@gmail.com';
+  const cc = inf.ontvanger2 || '';
+
+  // ── Bouw e-mailbody (platte tekst) ────────────────────────
+  const cats = [...new Set(items.map(([code]) => ARTIKELEN.find(x=>x.code===code)?.cat).filter(Boolean))];
+  let body = `MATERIAAL BESTELLEN – EMONDT GROEP
+${'='.repeat(46)}
+
+`;
+  body += `Datum:           ${datum}
+`;
+  if (leverdatum) body += `Leverdatum:      ${new Date(leverdatum).toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric'})}
+`;
+  body += `Monteur:         ${inf.naam||'—'}
+`;
+  if (inf.telefoon) body += `Telefoon:        ${inf.telefoon}
+`;
+  body += `Afdeling:        ${inf.afdeling||'—'}
+`;
+  body += `Projectnummer:   ${inf.projectnummer||'—'}
+`;
+  body += `Projectnaam:     ${inf.projectnaam||'—'}
+`;
+  body += `Afleveradres:    ${inf.locatie||'—'}
+
+`;
+  body += `GEVRAAGDE ARTIKELEN
+${'─'.repeat(46)}
+`;
+  let totaal = 0;
+  const artikelItems = [];
+  cats.forEach(cat => {
+    body += `
+[ ${cat.toUpperCase()} ]
+`;
+    items.forEach(([code, qty]) => {
+      const a = ARTIKELEN.find(x=>x.code===code);
+      if (!a || a.cat !== cat) return;
+      totaal += qty;
+      artikelItems.push({ code: a.code, naam: a.naam, cat: a.cat, eenheid: a.eenheid || 'stuk', leverancier: a.leverancier || '', qty });
+      const eenheid     = a.eenheid     || 'stuk';
+      const leverancier = a.leverancier ? `  Leverancier: ${a.leverancier}\n` : '';
+      body += `  ${a.code.padEnd(12)} ${String(qty).padStart(4)} x  ${a.naam}  [per ${eenheid}]
+${leverancier}`;
+    });
+  });
+  body += `
+${'─'.repeat(46)}
+TOTAAL: ${totaal} artikelen
+`;
+  if (inf.opmerkingen) body += `
+OPMERKINGEN
+${inf.opmerkingen}
+`;
+  body += `
+${'='.repeat(46)}
+Emondt Materiaalapp · www.emondt.nl`;
+
+  // ── Verstuur via mailto ───────────────────────────────────
+  // ── Verstuur via Scripts (automatisch) of mailto (fallback) ──
+  // Script verstuurt de mail automatisch — geen mailto nodig
+  // logBestellingSheets handelt zowel mail als logging af
+
+  // ── Log bestelling in Google Sheets (+ mail via script) ──
+  logBestellingSheets({
+    datum,
+    naam:          inf.naam,
+    telefoon:      inf.telefoon,
+    afdeling:      inf.afdeling,
+    projectnummer: inf.projectnummer,
+    projectnaam:   inf.projectnaam,
+    locatie:       inf.locatie,
+    leverdatum,
+    opmerkingen:   inf.opmerkingen,
+    ontvanger2:    inf.ontvanger2 || '',
+    items:         artikelItems,
+  });
+
+  // ── Winkelmand legen ──────────────────────────────────────
+  setTimeout(() => {
+    cart = {};
+    try { localStorage.removeItem('leverdatum'); localStorage.removeItem('emondt_cart'); } catch(e){}
+    document.querySelectorAll('.qty-val').forEach(el => el.value = 0);
+    document.querySelectorAll('.artikel-card').forEach(el => el.classList.remove('selected'));
+    updateBadge();
+    showTab('welkom');
+  }, 800);
+  showToast('⏳ Bestelling wordt verstuurd...');
+}
+
+// ── OPSLAAN / LADEN ───────────────────────────────────────────
+function locatieKeuze(sel) {
+  const input = document.getElementById('locatie');
+  if (sel.value === 'vrij') {
+    input.style.display = 'block';
+    input.value = '';
+    input.focus();
+  } else {
+    input.style.display = 'none';
+    input.value = sel.value;
+  }
+  saveInfo();
+}
+
+function saveInfo() {
+  const inf = getInfo();
+  // Naam en telefoon blijven altijd bewaard (localStorage)
+  try { localStorage.setItem('emondt_persoon', JSON.stringify({ naam: inf.naam, telefoon: inf.telefoon })); } catch(e){}
+  // Overige velden alleen voor deze sessie (sessionStorage)
+  try { sessionStorage.setItem('emondt_sessie_info', JSON.stringify(inf)); } catch(e){}
+}
+function loadInfo() {
+  try { localStorage.removeItem('emondt_info'); } catch(e){} // opruimen oude sleutel
+  try {
+    // Vaste gegevens uit localStorage
+    const persoon = JSON.parse(localStorage.getItem('emondt_persoon') || '{}');
+    if (persoon.naam)     { const el = document.getElementById('naam');     if (el) el.value = persoon.naam; }
+    if (persoon.telefoon) { const el = document.getElementById('telefoon'); if (el) el.value = persoon.telefoon; }
+
+    // Sessiegegevens uit sessionStorage (verdwijnen bij sluiten tabblad)
+    const s = JSON.parse(sessionStorage.getItem('emondt_sessie_info') || '{}');
+    ['afdeling','projectnummer','projectnaam','ontvanger2','opmerkingen'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && s[id]) el.value = s[id];
+    });
+
+    // Herstel afleveradres dropdown
+    if (s.locatie) {
+      const sel   = document.getElementById('locatie-keuze');
+      const input = document.getElementById('locatie');
+      if (sel && input) {
+        const vaste = ['op de klus', 'op de zaak'];
+        if (vaste.includes(s.locatie)) {
+          sel.value = s.locatie;
+          input.value = s.locatie;
+          input.style.display = 'none';
+        } else {
+          sel.value = 'vrij';
+          input.value = s.locatie;
+          input.style.display = 'block';
+        }
+      }
+    }
+  } catch(e){}
+}
+function getInfo() {
+  return ['naam','telefoon','afdeling','projectnummer','projectnaam','locatie','ontvanger2','opmerkingen']
+    .reduce((o,id) => { const el = document.getElementById(id); if(el) o[id]=el.value; return o; }, {});
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+
+function customArtikelToevoegen() {
+  const naam = document.getElementById('custom-naam').value.trim();
+  const code = document.getElementById('custom-code').value.trim();
+  const qty  = parseInt(document.getElementById('custom-qty').value)||1;
+  if (!naam) { alert('Vul een omschrijving in.'); return; }
+  customTeller++;
+  const customCode = code || ('CUSTOM-'+customTeller);
+  if (!ARTIKELEN.find(a=>a.code===customCode)) {
+    ARTIKELEN.push({code:customCode,naam,cat:'Diversen',eenheid:'stuk',icon:'📦',custom:true});
+  }
+  cart[customCode] = qty;
+  updateBadge();
+  document.getElementById('custom-naam').value = '';
+  document.getElementById('custom-code').value = '';
+  document.getElementById('custom-qty').value = '1';
+  showToast('✓ Toegevoegd aan bestelling');
+  sluitVrijArtikel();
+  applyFilters();
+}
+
+// ── DEV BEHEER ────────────────────────────────────────────────
+const DEV_PW = 'Eg@2026!#';
+
+function getSheetsUrl() {
+  return SHEETS_API_URL;
+}
+
+// Alle schrijfacties via GET (geen POST — werkt altijd cross-origin)
+function sheetsRequest(params) {
+  const url = getSheetsUrl();
+  if (!url) return Promise.resolve({ status: 'geen_url' });
+  const qs = Object.entries(params)
+    .map(([k, v]) => `${k}=${encodeURIComponent(typeof v === 'object' ? JSON.stringify(v) : v)}`)
+    .join('&');
+  return fetch(`${url}?${qs}&t=${Date.now()}`).then(r => r.json());
+}
+
+function testVerbinding() {
+  const status = document.getElementById('sheets-status');
+  status.innerHTML = '<span style="color:var(--muted)">⏳ Verbinding testen...</span>';
+  fetch(SHEETS_API_URL + '?actie=lezen&t=' + Date.now())
+    .then(r => r.json())
+    .then(data => {
+      status.innerHTML = data.status === 'ok'
+        ? `<span style="color:green">✅ Verbinding OK — ${data.count} artikelen in Sheets.</span>`
+        : `<span style="color:var(--danger)">❌ Script fout: ${data.message || JSON.stringify(data)}</span>`;
+    })
+    .catch(err => {
+      status.innerHTML = `<span style="color:var(--danger)">❌ Geen verbinding: ${err.message}</span>`;
+    });
+}
+
+function herlaadArtikelen() {
+  try { localStorage.removeItem('emondt_artikelen_ts'); sessionStorage.removeItem('emondt_artikelen_sessie'); } catch(e) {}
+  laadArtikelenUitSheets();
+  showToast('🔄 Artikelen worden herladen...');
+  showTab('artikelen');
+}
+
+function testBestellingLog() {
+  const statusEl = document.getElementById('sheets-status');
+  if (statusEl) statusEl.innerHTML = '<span style="color:var(--muted)">⏳ Test bestelling loggen...</span>';
+
+  const testData = {
+    datum:         new Date().toLocaleString('nl-NL'),
+    naam:          'TEST Monteur',
+    telefoon:      '0600000000',
+    afdeling:      'Test',
+    projectnummer: 'TEST-001',
+    projectnaam:   'Testproject',
+    locatie:       'Testlocatie',
+    leverdatum:    '',
+    opmerkingen:   'Dit is een testbestelling',
+    items:         [{ code: 'TEST-001', naam: 'Testartikel', cat: 'Diversen', qty: 1 }],
+  };
+
+  const artikelStr = testData.items.map(i => `${i.code}×${i.qty}`).join('|');
+  const url = getSheetsUrl();
+  if (!url) {
+    if (statusEl) statusEl.innerHTML = '<span style="color:var(--danger)">❌ Geen URL ingesteld</span>';
+    return;
+  }
+
+  const params = new URLSearchParams({
+    actie: 'bestelling',
+    datum: testData.datum, naam: testData.naam, telefoon: testData.telefoon,
+    afdeling: testData.afdeling, projectnummer: testData.projectnummer,
+    projectnaam: testData.projectnaam, locatie: testData.locatie,
+    leverdatum: '', opmerkingen: testData.opmerkingen,
+    artikelen: artikelStr, totaal: 1, t: Date.now(),
+  });
+
+  const fullUrl = `${url}?${params.toString()}`;
+  if (statusEl) statusEl.innerHTML = `<span style="color:var(--muted)">📡 URL lengte: ${fullUrl.length} tekens</span>`;
+
+  fetch(fullUrl)
+    .then(r => r.json())
+    .then(r => {
+      if (statusEl) statusEl.innerHTML = r.status === 'ok'
+        ? '<span style="color:green">✅ Test bestelling gelogd in Sheets!</span>'
+        : `<span style="color:var(--danger)">❌ Script fout: ${r.message || JSON.stringify(r)}</span>`;
+    })
+    .catch(err => {
+      if (statusEl) statusEl.innerHTML = `<span style="color:var(--danger)">❌ Fetch fout: ${err.message}<br><small>Controleer of de URL van de <strong>nieuwste implementatie</strong> is.</small></span>`;
+    });
+}
+
+// Bestelling loggen — compact GET request
+function logBestellingSheets(data) {
+  const url = getSheetsUrl();
+  if (!url) return;
+
+  // Formaat: code×qty×naam×eenheid×leverancier
+  const artikelStr = (data.items || [])
+    .map(i => [
+      i.code,
+      i.qty,
+      (i.naam        || '').replace(/[×|]/g, ''),
+      (i.eenheid     || 'stuk').replace(/[×|]/g, ''),
+      (i.leverancier || '').replace(/[×|]/g, ''),
+    ].join('×'))
+    .join('|');
+
+  // Bouw compact payload — geen JSON nesting, directe parameters
+  const params = new URLSearchParams({
+    actie:          'bestelling',
+    datum:          data.datum          || '',
+    naam:           data.naam           || '',
+    telefoon:       data.telefoon       || '',
+    afdeling:       data.afdeling       || '',
+    projectnummer:  data.projectnummer  || '',
+    projectnaam:    data.projectnaam    || '',
+    locatie:        data.locatie        || '',
+    leverdatum:     data.leverdatum     || '',
+    opmerkingen:    data.opmerkingen    || '',
+    ontvanger2:     data.ontvanger2     || '',
+    artikelen:      artikelStr,
+    totaal:         (data.items || []).reduce((s, i) => s + (parseInt(i.qty)||0), 0),
+    t:              Date.now(),
+  });
+
+  fetch(`${url}?${params.toString()}`)
+    .then(r => r.json())
+    .then(r => {
+      if (r.status === 'ok') {
+        showToast('✅ Bestelling verstuurd!');
+      } else {
+        showToast('⚠️ Fout: ' + (r.message || r.status));
+        console.warn('[Sheets] Fout:', r);
+      }
+    })
+    .catch(err => {
+      showToast('⚠️ Verbinding mislukt');
+      console.warn('[Sheets] Mislukt:', err.message);
+    });
+}
+
+
+
+function openDev() {
+  // Al ingelogd in deze sessie?
+  if (sessionStorage.getItem('dev_auth') === '1') {
+    closeDrawer();
+    showTab('dev');
+      initDevPage();
+    return;
+  }
+  closeDrawer();
+  document.getElementById('dev-overlay').classList.add('open');
+  document.getElementById('dev-pw').value = '';
+  document.getElementById('dev-pw-err').style.display = 'none';
+  setTimeout(() => document.getElementById('dev-pw').focus(), 100);
+}
+
+function initDevPage() {
+  bouwIconKiezer();
+}
+
+function bouwIconKiezer() {
+  const container = document.getElementById('cat-icon-lijst');
+  if (!container) return;
+  const cats = [...new Set(ARTIKELEN.map(a => a.cat))].filter(Boolean).sort();
+  if (!cats.length) {
+    container.innerHTML = '<div style="color:var(--muted);font-size:.8rem">Laad eerst artikelen om iconen in te stellen.</div>';
+    return;
+  }
+  container.innerHTML = cats.map(cat => {
+    const huidig = ICONS[cat] || ICON_DEFAULTS[cat] || '📦';
+    const opties = ICOON_OPTIES.map(ic =>
+      `<option value="${ic}"${ic===huidig?' selected':''}>${ic}</option>`
+    ).join('');
+    return `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:1.1rem;width:28px;text-align:center">${huidig}</span>
+      <span style="flex:1;font-size:.84rem">${cat}</span>
+      <select data-cat="${cat}" style="background:var(--bg);border:1.5px solid var(--border);border-radius:6px;font-size:1rem;padding:4px 6px;color:var(--text);outline:none" onchange="previewIcon(this)">
+        ${opties}
+      </select>
+    </div>`;
+  }).join('');
+}
+
+function previewIcon(sel) {
+  const icoon = sel.value;
+  const preview = sel.parentElement.querySelector('span:first-child');
+  if (preview) preview.textContent = icoon;
+}
+
+function slaIconenOp() {
+  const selects = document.querySelectorAll('#cat-icon-lijst select[data-cat]');
+  selects.forEach(sel => {
+    const cat = sel.dataset.cat;
+    ICONS[cat] = sel.value;
+  });
+  // Opslaan in localStorage
+  try { localStorage.setItem('emondt_icons', JSON.stringify(ICONS)); } catch(e) {}
+  // Drawer vernieuwen
+  bouwDrawerCats();
+  // Artikellijst vernieuwen (iconen in kaartjes updaten)
+  renderArtikelen(activeCat ? ARTIKELEN.filter(a=>a.cat===activeCat) : ARTIKELEN);
+  showToast('✅ Iconen opgeslagen');
+}
+
+function laadOpgeslagenIconen() {
+  try {
+    const opgeslagen = localStorage.getItem('emondt_icons');
+    if (opgeslagen) {
+      const parsed = JSON.parse(opgeslagen);
+      Object.assign(ICONS, parsed);
+    }
+  } catch(e) {}
+}
+
+function checkPw() {
+  if (document.getElementById('dev-pw').value === DEV_PW) {
+    sessionStorage.setItem('dev_auth', '1');
+    document.getElementById('dev-overlay').classList.remove('open');
+    showTab('dev');
+      initDevPage();
+  } else {
+    document.getElementById('dev-pw-err').style.display = 'block';
+    document.getElementById('dev-pw').value = '';
+  }
+}
+
+
+
+function devZoek() {
+  const q = document.getElementById('dev-zoek').value.toLowerCase().trim();
+  const res = document.getElementById('dev-zoek-resultaten');
+  if (!q) { res.innerHTML = ''; return; }
+  const gevonden = ARTIKELEN.filter(a =>
+    a.naam.toLowerCase().includes(q) || a.code.toLowerCase().includes(q)
+  ).slice(0, 15);
+  if (!gevonden.length) {
+    res.innerHTML = '<div style="color:var(--muted);font-size:.84rem;padding:8px 0">Geen resultaten gevonden.</div>';
+    return;
+  }
+  res.innerHTML = gevonden.map(a => `
+    <div class="dev-artikel-row" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:8px">
+      <div class="info" style="flex:1;min-width:0">
+        <strong style="font-size:.86rem;display:block;word-break:break-word">${a.naam}</strong>
+        <span style="font-size:.7rem;color:var(--muted)">${a.code} · ${a.cat}${a.subcat ? ' › ' + a.subcat : ''}</span>
+      </div>
+      <button data-code="${a.code}" class="btn-del-artikel" style="background:#fdecea;border:1px solid #f5c6c2;color:var(--danger);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:.82rem;flex-shrink:0">🗑 Verwijderen</button>
+    </div>`).join('');
+
+  // Bind events via delegation-safe approach
+  res.querySelectorAll('.btn-del-artikel').forEach(btn => {
+    btn.addEventListener('click', () => devVerwijderArtikel(btn.dataset.code));
+  });
+}
+
+function devVerwijderArtikel(code) {
+  const a = ARTIKELEN.find(x => x.code === code);
+  if (!a || !confirm(`Artikel "${a.naam}" (${code}) verwijderen uit de database?`)) return;
+  ARTIKELEN.splice(ARTIKELEN.findIndex(x => x.code === code), 1);
+  if (cart[code]) { delete cart[code]; saveCart(); updateBadge(); }
+  bouwDrawerCats();
+  devZoek();
+
+  // Verwijder uit Sheets
+  sheetsRequest({ actie: 'verwijderen', code })
+    .then(data => showToast(data.status === 'ok' ? '🗑 Verwijderd uit Sheets' : '⚠️ ' + (data.message||data.status)))
+    .catch(() => showToast('🗑 Lokaal verwijderd (Sheets niet bereikbaar)'));
+}
+
+
+function updateOnlineStatus() {
+  const bar = document.getElementById('pwa-banner');
+  // Offline-status beïnvloedt de PWA-banner niet; log alleen voor debugging
+  console.log('[Online]', navigator.onLine ? 'online' : 'offline');
+}
+window.addEventListener('online',  updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+// ── PWA INSTALL PROMPT ────────────────────────────────────────
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  // Toon banner
+  if (!localStorage.getItem('pwa-banner-dismissed') && !window.matchMedia('(display-mode: standalone)').matches) {
+    setTimeout(() => { document.getElementById('pwa-banner').style.display = 'block'; }, 3000);
+  }
+  // Toon ook de knop op de landingspagina
+  const btn = document.getElementById('landing-install-btn');
+  if (btn) btn.style.display = 'inline-block';
+});
+
+async function triggerPwaInstall() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  document.getElementById('pwa-banner').style.display = 'none';
+  const btn = document.getElementById('landing-install-btn');
+  if (btn) btn.style.display = 'none';
+  if (outcome === 'accepted') showToast('✅ App geïnstalleerd!');
+}
+
+document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  console.log('[PWA] Installatie uitkomst:', outcome);
+  deferredInstallPrompt = null;
+  document.getElementById('pwa-banner').style.display = 'none';
+  if (outcome === 'accepted') showToast('✅ App geïnstalleerd!');
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('pwa-banner').style.display = 'none';
+  deferredInstallPrompt = null;
+  console.log('[PWA] App geïnstalleerd');
+});
+</script>
+<!-- ── FOOTER ── -->
+<footer style="text-align:center;padding:20px 16px;margin-top:8px;font-size:.72rem;color:var(--muted);letter-spacing:.06em;border-top:1px solid var(--border)">
+  Ontwerp en concept door Ruben Brinks
+</footer>
+
+</body>
+</html>

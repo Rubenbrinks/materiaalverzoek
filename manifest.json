@@ -1,0 +1,72 @@
+{
+  "name": "Emondt – Materiaal bestellen",
+  "short_name": "Emondt materiaalapp",
+  "description": "Materiaalverzoeken voor Emondt monteurs. Selecteer artikelen en verstuur direct via e-mail.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#041c42",
+  "theme_color": "#041c42",
+  "lang": "nl",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "favicon-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Artikelen",
+      "short_name": "Artikelen",
+      "description": "Direct naar de artikelenlijst",
+      "url": "./index.html#artikelen",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Monteur",
+      "short_name": "Monteur",
+      "description": "Monteurgegevens invullen",
+      "url": "./index.html#info",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
+}
