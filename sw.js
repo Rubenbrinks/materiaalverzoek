@@ -99,6 +99,13 @@ self.addEventListener('fetch', event => {
   }
 });
 
+// ── MESSAGE: Forceer activatie nieuwe SW ──────────────────────
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 // ── SYNC: Achtergrond-sync (toekomstige uitbreiding) ──────────
 self.addEventListener('sync', event => {
   if (event.tag === 'sync-bestellingen') {
