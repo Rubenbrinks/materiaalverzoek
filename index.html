@@ -77,9 +77,17 @@
     .drawer-group-toggle .di-icon{font-size:1.1rem;width:22px;text-align:center}
     .drawer-group-toggle .toggle-arrow{margin-left:auto;font-size:.7rem;transition:transform .25s;color:rgba(255,255,255,.4)}
     .drawer-group-toggle.open .toggle-arrow{transform:rotate(90deg)}
-    .drawer-submenu{overflow:hidden;max-height:0;transition:max-height .3s cubic-bezier(.4,0,.2,1)}
-    .drawer-submenu.open{max-height:600px}
+    .drawer-submenu{overflow:hidden;max-height:0;transition:max-height .4s cubic-bezier(.4,0,.2,1)}
+    .drawer-submenu.open{max-height:70vh;overflow-y:auto}
     .drawer-submenu .drawer-item{padding-left:36px;font-size:.84rem}
+    .drawer-subgroup-toggle{display:flex;align-items:center;gap:8px;padding:8px 20px 8px 36px;cursor:pointer;color:rgba(255,255,255,.6);font-size:.8rem;transition:background .15s;user-select:none}
+    .drawer-subgroup-toggle:hover{background:rgba(255,255,255,.05);color:var(--white)}
+    .drawer-subgroup-toggle .toggle-arrow{margin-left:auto;font-size:.65rem;transition:transform .2s;color:rgba(255,255,255,.3)}
+    .drawer-subgroup-toggle.open .toggle-arrow{transform:rotate(90deg)}
+    .drawer-subsubmenu{overflow:hidden;max-height:0;transition:max-height .3s ease}
+    .drawer-subsubmenu.open{max-height:500px}
+    .drawer-subsubmenu .drawer-item{padding-left:52px;font-size:.79rem;color:rgba(255,255,255,.55)}
+    .drawer-subsubmenu .drawer-item:hover,.drawer-subsubmenu .drawer-item.active{color:var(--white)}
     .drawer-item{display:flex;align-items:center;gap:12px;padding:13px 20px;color:rgba(255,255,255,.75);font-size:.92rem;cursor:pointer;transition:background .15s,color .15s;border-left:3px solid transparent;flex-shrink:0}
     .drawer-item:hover,.drawer-item.active{background:rgba(174,195,54,.1);color:var(--white);border-left-color:var(--green)}
     .drawer-item .di-icon{font-size:1.1rem;width:24px;text-align:center;flex-shrink:0}
@@ -139,7 +147,7 @@
     .search-bar input:focus{background:transparent;border:none}
 
     /* LABELS */
-    .cat-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--white);background:var(--navy);padding:8px 14px;border-radius:var(--radius);margin:18px 0 8px;display:flex;align-items:center;gap:8px}
+    .cat-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--white);background:var(--navy);padding:8px 14px;border-radius:var(--radius);margin:18px 0 8px;display:inline-flex;align-items:center;gap:8px}
     .cat-label:first-child{margin-top:0}
     /* SUBCAT FILTERBALK */
     #subcat-balk{display:none;flex-wrap:wrap;gap:6px;margin-bottom:12px}
@@ -149,6 +157,8 @@
 
     /* SUBCAT LABEL IN LIJST */
     .subcat-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--navy);background:var(--green-light);border:1px solid var(--green);padding:5px 12px;border-radius:4px;margin:10px 0 6px;display:inline-block;font-weight:600}
+    .subsubcat-label{font-size:.64rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:4px 0 3px 4px;margin:8px 0 4px;border-left:2px solid var(--border);display:block;font-weight:600}
+    .subsubsubcat-label{font-size:.61rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);opacity:.7;padding:3px 0 2px 12px;margin:6px 0 3px;border-left:2px dotted var(--border);display:block;font-weight:600}
 
     /* VERPAKKING POPUP */
     .verpakking-popup{position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:var(--navy);color:var(--white);font-size:.76rem;padding:8px 12px;border-radius:6px;box-shadow:0 4px 16px rgba(4,28,66,.25);z-index:50;line-height:1.5;pointer-events:none}
@@ -163,8 +173,9 @@
     .artikel-grid{display:flex;flex-direction:column;gap:8px}
     .artikel-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:flex-start;gap:12px;transition:border-color .2s,box-shadow .2s;box-shadow:0 1px 3px rgba(4,28,66,.05)}
     .artikel-card.selected{border-color:var(--green);background:var(--green-light);box-shadow:0 2px 8px rgba(174,195,54,.18)}
-    .artikel-icon{width:40px;height:40px;border-radius:6px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem}
-    .artikel-card.selected .artikel-icon{background:#e2eba3;border-color:var(--green)}
+    .artikel-icon{width:44px;height:44px;border-radius:6px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem;overflow:hidden}
+    .artikel-icon img{width:100%;height:100%;object-fit:cover;border-radius:5px}
+    .artikel-card.selected .artikel-icon{border-color:var(--green)}
     .artikel-info{flex:1;min-width:0}
     .artikel-naam{font-size:.86rem;color:var(--anthracite);white-space:normal;word-break:break-word;line-height:1.35}
     .artikel-code{font-size:.7rem;color:var(--muted);margin-top:2px;letter-spacing:.04em}
@@ -243,7 +254,7 @@
   <div class="drawer-submenu" id="drawer-cat-lijst"></div>
   <div class="drawer-group-toggle" style="opacity:.45;cursor:default;pointer-events:none">
     <span class="di-icon">🕐</span>
-    <span>binnenkort meer functies!</span>
+    <span>Meer komt binnenkort</span>
   </div>
   <div class="drawer-spacer"></div>
   <div class="drawer-bottom">
@@ -541,7 +552,7 @@ let ICONS = {};
 const ICON_DEFAULTS = {
   'Afvoermaterialen':'🔧','Bevestigingsmateriaal':'🔩','Diversen':'📦',
   'Elektra':'⚡','Isolatie':'🧱','Koeltechnische hulpstukken':'❄️',
-  'Koelleiding':'🟠','Tape & Lijmen':'🎗️','Waterzijdig':'💧'
+  'Koperleiding':'🟠','Tape & Lijmen':'🎗️','Waterzijdig':'💧'
 };
 
 // Alle beschikbare emoji-iconen om uit te kiezen
@@ -565,46 +576,133 @@ function loadCart() {
 }
 let activeCat = null;
 let activeSubcat = null;
+let activeSubsubcat = null;
+let activeSubsubsubcat = null;
 let customTeller = 0;
 
 function updateSubcatBalk() {
   const balk = document.getElementById('subcat-balk');
   balk.innerHTML = '';
+  balk.style.flexDirection = 'column';
+  balk.style.gap = '6px';
 
   if (!activeCat) {
     // Geen hoofdfilter → toon alle hoofdcategorieën als chips
     const cats = [...new Set(ARTIKELEN.map(a => a.cat).filter(Boolean))].sort();
     if (!cats.length) { balk.style.display = 'none'; return; }
     balk.style.display = 'flex';
+    balk.style.flexDirection = 'row';
+    const rij = document.createElement('div');
+    rij.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px';
     cats.forEach(cat => {
       const chip = document.createElement('button');
       chip.className = 'subcat-chip';
       chip.textContent = (ICONS[cat] || ICON_DEFAULTS[cat] || '📦') + ' ' + cat;
       chip.onclick = () => filterCategorie(cat);
-      balk.appendChild(chip);
+      rij.appendChild(chip);
     });
-  } else {
-    // Hoofdfilter actief → toon subcategorieën van die categorie
-    const subcats = [...new Set(
-      ARTIKELEN.filter(a => a.cat === activeCat).map(a => a.subcat).filter(Boolean)
+    balk.appendChild(rij);
+    return;
+  }
+
+  balk.style.display = 'flex';
+
+  // Rij 1: hoofdcategorie-chip (actief) + wis-knop
+  const rij0 = document.createElement('div');
+  rij0.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;align-items:center';
+  const catChip = document.createElement('button');
+  catChip.className = 'subcat-chip active';
+  catChip.textContent = (ICONS[activeCat] || ICON_DEFAULTS[activeCat] || '📦') + ' ' + activeCat;
+  catChip.title = 'Klik om filter te wissen';
+  catChip.onclick = () => filterCategorie(null);
+  rij0.appendChild(catChip);
+  balk.appendChild(rij0);
+
+  // Rij 2: subcat chips
+  const subcats = [...new Set(
+    ARTIKELEN.filter(a => a.cat === activeCat).map(a => a.subcat).filter(Boolean)
+  )].sort();
+
+  if (!subcats.length) return;
+
+  const rij1 = document.createElement('div');
+  rij1.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;padding-left:8px;border-left:2px solid var(--border)';
+
+  const alChip = document.createElement('button');
+  alChip.className = 'subcat-chip' + (!activeSubcat ? ' active' : '');
+  alChip.textContent = 'Alle';
+  alChip.onclick = () => { activeSubcat = null; activeSubsubcat = null; updateSubcatBalk(); applyFilters(); };
+  rij1.appendChild(alChip);
+
+  subcats.forEach(sub => {
+    const chip = document.createElement('button');
+    chip.className = 'subcat-chip' + (activeSubcat === sub ? ' active' : '');
+    chip.textContent = sub;
+    chip.onclick = () => { activeSubcat = sub; activeSubsubcat = null; updateSubcatBalk(); applyFilters(); };
+    rij1.appendChild(chip);
+  });
+  balk.appendChild(rij1);
+
+  // Rij 3: subsubcat chips (alleen als subcat actief is)
+  if (activeSubcat) {
+    const subsubcats = [...new Set(
+      ARTIKELEN
+        .filter(a => a.cat === activeCat && a.subcat === activeSubcat)
+        .map(a => a.subsubcat).filter(Boolean)
     )].sort();
 
-    if (!subcats.length) { balk.style.display = 'none'; activeSubcat = null; return; }
+    if (subsubcats.length) {
+      const rij2 = document.createElement('div');
+      rij2.style.cssText = 'display:flex;flex-wrap:wrap;gap:5px;padding-left:16px;border-left:2px solid var(--border)';
 
-    balk.style.display = 'flex';
-    const alChip = document.createElement('button');
-    alChip.className = 'subcat-chip' + (!activeSubcat ? ' active' : '');
-    alChip.textContent = 'Alle';
-    alChip.onclick = () => { activeSubcat = null; updateSubcatBalk(); applyFilters(); };
-    balk.appendChild(alChip);
+      const alSub = document.createElement('button');
+      alSub.className = 'subcat-chip' + (!activeSubsubcat ? ' active' : '');
+      alSub.style.fontSize = '.68rem';
+      alSub.textContent = 'Alle';
+      alSub.onclick = () => { activeSubsubcat = null; updateSubcatBalk(); applyFilters(); };
+      rij2.appendChild(alSub);
 
-    subcats.forEach(sub => {
-      const chip = document.createElement('button');
-      chip.className = 'subcat-chip' + (activeSubcat === sub ? ' active' : '');
-      chip.textContent = sub;
-      chip.onclick = () => { activeSubcat = sub; updateSubcatBalk(); applyFilters(); };
-      balk.appendChild(chip);
-    });
+      subsubcats.forEach(subsub => {
+        const chip = document.createElement('button');
+        chip.className = 'subcat-chip' + (activeSubsubcat === subsub ? ' active' : '');
+        chip.style.fontSize = '.68rem';
+        chip.textContent = subsub;
+        chip.onclick = () => { activeSubsubcat = subsub; activeSubsubsubcat = null; updateSubcatBalk(); applyFilters(); };
+        rij2.appendChild(chip);
+      });
+      balk.appendChild(rij2);
+
+      // Rij 4: subsubsubcat chips (alleen als subsubcat actief is)
+      if (activeSubsubcat) {
+        const subsubsubcats = [...new Set(
+          ARTIKELEN
+            .filter(a => a.cat === activeCat && a.subcat === activeSubcat && a.subsubcat === activeSubsubcat)
+            .map(a => a.subsubsubcat).filter(Boolean)
+        )].sort();
+
+        if (subsubsubcats.length) {
+          const rij3 = document.createElement('div');
+          rij3.style.cssText = 'display:flex;flex-wrap:wrap;gap:5px;padding-left:24px;border-left:2px dotted var(--border)';
+
+          const alSubsub = document.createElement('button');
+          alSubsub.className = 'subcat-chip' + (!activeSubsubsubcat ? ' active' : '');
+          alSubsub.style.fontSize = '.64rem';
+          alSubsub.textContent = 'Alle';
+          alSubsub.onclick = () => { activeSubsubsubcat = null; updateSubcatBalk(); applyFilters(); };
+          rij3.appendChild(alSubsub);
+
+          subsubsubcats.forEach(subsubsub => {
+            const chip = document.createElement('button');
+            chip.className = 'subcat-chip' + (activeSubsubsubcat === subsubsub ? ' active' : '');
+            chip.style.fontSize = '.64rem';
+            chip.textContent = subsubsub;
+            chip.onclick = () => { activeSubsubsubcat = subsubsub; updateSubcatBalk(); applyFilters(); };
+            rij3.appendChild(chip);
+          });
+          balk.appendChild(rij3);
+        }
+      }
+    }
   }
 }
 
@@ -704,6 +802,9 @@ function fetchSheets(toonLaadindicator) {
           leverancier: a.leverancier || '',
           warning:     a.warning     || '',
           verpakking:  a.verpakking  || '',
+          afbeelding:  a.afbeelding  || '',
+          subsubcat:   a.subsubcat   || '',
+          subsubsubcat: a.subsubsubcat || '',
           icon:        ICONS[a.cat] || ICON_DEFAULTS[a.cat] || '📦',
         })).filter(a => a.code && a.naam);
 
@@ -776,9 +877,38 @@ function openDrawerGroep() {
   document.getElementById('drawer-cat-lijst').classList.add('open');
 }
 
+function filterSubcat(cat, sub) {
+  activeCat = cat; activeSubcat = sub; activeSubsubcat = null; activeSubsubsubcat = null;
+  closeDrawer(); openDrawerGroep();
+  const banner = document.getElementById('cat-banner');
+  document.getElementById('cat-banner-text').textContent = cat + ' › ' + sub;
+  banner.classList.add('visible');
+  updateSubcatBalk(); showTab('artikelen'); applyFilters();
+}
+
+function filterSubsubcat(cat, sub, subsub) {
+  activeCat = cat; activeSubcat = sub; activeSubsubcat = subsub; activeSubsubsubcat = null;
+  closeDrawer(); openDrawerGroep();
+  const banner = document.getElementById('cat-banner');
+  document.getElementById('cat-banner-text').textContent = cat + ' › ' + sub + ' › ' + subsub;
+  banner.classList.add('visible');
+  updateSubcatBalk(); showTab('artikelen'); applyFilters();
+}
+
+function filterSubsubsubcat(cat, sub, subsub, subsubsub) {
+  activeCat = cat; activeSubcat = sub; activeSubsubcat = subsub; activeSubsubsubcat = subsubsub;
+  closeDrawer(); openDrawerGroep();
+  const banner = document.getElementById('cat-banner');
+  document.getElementById('cat-banner-text').textContent = cat + ' › ' + sub + ' › ' + subsub + ' › ' + subsubsub;
+  banner.classList.add('visible');
+  updateSubcatBalk(); showTab('artikelen'); applyFilters();
+}
+
 function filterCategorie(cat) {
   activeCat = cat;
   activeSubcat = null;
+  activeSubsubcat = null;
+  activeSubsubsubcat = null;
   closeDrawer();
   document.querySelectorAll('.drawer-item').forEach(el => el.classList.remove('active'));
   if (cat) {
@@ -806,15 +936,146 @@ function bouwDrawerCats() {
   container.innerHTML = '';
 
   cats.forEach(cat => {
-    const id = 'di-cat-' + cat.replace(/[^a-zA-Z0-9]/g, '-');
-    CAT_IDS[cat] = id;
+    const catId = 'di-cat-' + cat.replace(/[^a-zA-Z0-9]/g, '-');
+    CAT_IDS[cat] = catId;
     const icon = ICONS[cat] || ICON_DEFAULTS[cat] || '📦';
-    const el = document.createElement('div');
-    el.className = 'drawer-item';
-    el.id = id;
-    el.innerHTML = `<span class="di-icon">${icon}</span> ${cat}`;
-    el.onclick = () => filterCategorie(cat);
-    container.appendChild(el);
+
+    // Subcats voor deze cat
+    const subcats = [...new Set(
+      ARTIKELEN.filter(a => a.cat === cat).map(a => a.subcat).filter(Boolean)
+    )].sort();
+
+    if (!subcats.length) {
+      // Geen subcats → gewoon een item
+      const el = document.createElement('div');
+      el.className = 'drawer-item';
+      el.id = catId;
+      el.innerHTML = `<span class="di-icon">${icon}</span> ${cat}`;
+      el.onclick = () => filterCategorie(cat);
+      container.appendChild(el);
+      return;
+    }
+
+    // Heeft subcats → toon als uitklapbare subgroep
+    const toggle = document.createElement('div');
+    toggle.className = 'drawer-subgroup-toggle';
+    toggle.innerHTML = `<span class="di-icon">${icon}</span> <span>${cat}</span> <span class="toggle-arrow">▶</span>`;
+
+    const submenu = document.createElement('div');
+    submenu.className = 'drawer-subsubmenu';
+    submenu.id = catId + '-sub';
+
+    // Cat-niveau item ("Alle [cat]") bovenaan submenu
+    const alEl = document.createElement('div');
+    alEl.className = 'drawer-item';
+    alEl.id = catId;
+    alEl.innerHTML = `<span class="di-icon" style="font-size:.75rem">📋</span> Alle ${cat}`;
+    alEl.onclick = () => filterCategorie(cat);
+    submenu.appendChild(alEl);
+
+    subcats.forEach(sub => {
+      // Subsubcats voor deze subcat
+      const subsubcats = [...new Set(
+        ARTIKELEN.filter(a => a.cat === cat && a.subcat === sub).map(a => a.subsubcat).filter(Boolean)
+      )].sort();
+
+      if (!subsubcats.length) {
+        const subEl = document.createElement('div');
+        subEl.className = 'drawer-item';
+        subEl.innerHTML = `<span style="opacity:.5;font-size:.8rem">—</span> ${sub}`;
+        subEl.onclick = () => { filterSubcat(cat, sub); };
+        submenu.appendChild(subEl);
+      } else {
+        // Subcat met eigen subsubcats → nog een niveau
+        const subToggle = document.createElement('div');
+        subToggle.className = 'drawer-item';
+        subToggle.style.cssText = 'flex-direction:column;align-items:flex-start;gap:4px;cursor:pointer';
+
+        const subHeader = document.createElement('div');
+        subHeader.style.cssText = 'display:flex;align-items:center;gap:8px;width:100%';
+        subHeader.innerHTML = `<span style="opacity:.5;font-size:.8rem">—</span> <span style="flex:1">${sub}</span> <span style="font-size:.6rem;color:rgba(255,255,255,.3)" class="ssarrow">▶</span>`;
+
+        const ssContainer = document.createElement('div');
+        ssContainer.style.cssText = 'display:none;flex-direction:column;width:100%;padding-left:12px';
+
+        const alSsEl = document.createElement('div');
+        alSsEl.style.cssText = 'padding:4px 0;font-size:.75rem;color:rgba(255,255,255,.5);cursor:pointer';
+        alSsEl.textContent = `Alle ${sub}`;
+        alSsEl.onclick = (e) => { e.stopPropagation(); filterSubcat(cat, sub); };
+        ssContainer.appendChild(alSsEl);
+
+        subsubcats.forEach(subsub => {
+          const ssEl = document.createElement('div');
+          ssEl.style.cssText = 'padding:4px 0;font-size:.75rem;color:rgba(255,255,255,.5);cursor:pointer';
+          ssEl.textContent = '· ' + subsub;
+          ssEl.onmouseenter = () => ssEl.style.color = 'var(--white)';
+          ssEl.onmouseleave = () => ssEl.style.color = 'rgba(255,255,255,.5)';
+
+          // Check for subsubsubcats
+          const subsubsubcats = [...new Set(
+            ARTIKELEN.filter(a => a.cat === cat && a.subcat === sub && a.subsubcat === subsub)
+              .map(a => a.subsubsubcat).filter(Boolean)
+          )].sort();
+
+          if (!subsubsubcats.length) {
+            ssEl.onclick = (e) => { e.stopPropagation(); filterSubsubcat(cat, sub, subsub); };
+            ssContainer.appendChild(ssEl);
+          } else {
+            // Heeft subsubsubcats → toon als uitklapbaar item
+            const arrowSpan = document.createElement('span');
+            arrowSpan.style.cssText = 'margin-left:4px;font-size:.6rem;transition:transform .2s;display:inline-block';
+            arrowSpan.textContent = '▶';
+            ssEl.appendChild(arrowSpan);
+
+            const sssContainer = document.createElement('div');
+            sssContainer.style.cssText = 'display:none;flex-direction:column;padding-left:10px';
+
+            const alSssEl = document.createElement('div');
+            alSssEl.style.cssText = 'padding:3px 0;font-size:.7rem;color:rgba(255,255,255,.4);cursor:pointer';
+            alSssEl.textContent = `Alle ${subsub}`;
+            alSssEl.onclick = (e) => { e.stopPropagation(); filterSubsubcat(cat, sub, subsub); };
+            sssContainer.appendChild(alSssEl);
+
+            subsubsubcats.forEach(subsubsub => {
+              const sssEl = document.createElement('div');
+              sssEl.style.cssText = 'padding:3px 0;font-size:.7rem;color:rgba(255,255,255,.4);cursor:pointer';
+              sssEl.textContent = '· ' + subsubsub;
+              sssEl.onmouseenter = () => sssEl.style.color = 'var(--white)';
+              sssEl.onmouseleave = () => sssEl.style.color = 'rgba(255,255,255,.4)';
+              sssEl.onclick = (e) => { e.stopPropagation(); filterSubsubsubcat(cat, sub, subsub, subsubsub); };
+              sssContainer.appendChild(sssEl);
+            });
+
+            ssEl.onclick = (e) => {
+              e.stopPropagation();
+              const open = sssContainer.style.display === 'flex';
+              sssContainer.style.display = open ? 'none' : 'flex';
+              arrowSpan.style.transform = open ? '' : 'rotate(90deg)';
+            };
+            ssEl.appendChild(sssContainer);
+            ssContainer.appendChild(ssEl);
+          }
+        });
+
+        subToggle.appendChild(subHeader);
+        subToggle.appendChild(ssContainer);
+        subHeader.onclick = () => {
+          const open = ssContainer.style.display === 'flex';
+          ssContainer.style.display = open ? 'none' : 'flex';
+          subHeader.querySelector('.ssarrow').style.transform = open ? '' : 'rotate(90deg)';
+        };
+        submenu.appendChild(subToggle);
+      }
+    });
+
+    toggle.onclick = () => {
+      const isOpen = submenu.classList.contains('open');
+      submenu.classList.toggle('open', !isOpen);
+      toggle.classList.toggle('open', !isOpen);
+    };
+
+    container.appendChild(toggle);
+    container.appendChild(submenu);
   });
 
   // Update dev categorie-dropdowns dynamisch
@@ -830,7 +1091,9 @@ function bouwDrawerCats() {
 function applyFilters() {
   const q = document.getElementById('zoek').value.toLowerCase();
   let lijst = activeCat ? ARTIKELEN.filter(a => a.cat === activeCat) : ARTIKELEN;
-  if (activeSubcat) lijst = lijst.filter(a => a.subcat === activeSubcat);
+  if (activeSubcat)       lijst = lijst.filter(a => a.subcat === activeSubcat);
+  if (activeSubsubcat)    lijst = lijst.filter(a => a.subsubcat === activeSubsubcat);
+  if (activeSubsubsubcat) lijst = lijst.filter(a => a.subsubsubcat === activeSubsubsubcat);
   if (q) lijst = lijst.filter(a => a.naam.toLowerCase().includes(q) || a.code.toLowerCase().includes(q));
   renderArtikelen(lijst);
 }
@@ -866,9 +1129,32 @@ function renderArtikelen(lijst) {
     if (hasSubcats) {
       [...new Set(catItems.map(a => a.subcat).filter(Boolean))].forEach(sub => {
         const sl = document.createElement('div'); sl.className = 'subcat-label'; sl.textContent = sub; c.appendChild(sl);
-        catItems.filter(a => a.subcat === sub).forEach(a => renderArtikelCard(a, c));
+        const subItems = catItems.filter(a => a.subcat === sub);
+        const hasSubsubcats = subItems.some(a => a.subsubcat);
+        if (hasSubsubcats) {
+          [...new Set(subItems.map(a => a.subsubcat).filter(Boolean))].forEach(subsub => {
+            const ssl = document.createElement('div'); ssl.className = 'subsubcat-label'; ssl.textContent = subsub; c.appendChild(ssl);
+            const subsubItems = subItems.filter(a => a.subsubcat === subsub);
+            const hasSubsubsubcats = subsubItems.some(a => a.subsubsubcat);
+            if (hasSubsubsubcats) {
+              [...new Set(subsubItems.map(a => a.subsubsubcat).filter(Boolean))].forEach(subsubsub => {
+                const sssl = document.createElement('div'); sssl.className = 'subsubsubcat-label'; sssl.textContent = subsubsub; c.appendChild(sssl);
+                subsubItems.filter(a => a.subsubsubcat === subsubsub).forEach(a => renderArtikelCard(a, c));
+              });
+              subsubItems.filter(a => !a.subsubsubcat).forEach(a => renderArtikelCard(a, c));
+            } else {
+              subsubItems.forEach(a => renderArtikelCard(a, c));
+            }
+          });
+          subItems.filter(a => !a.subsubcat).forEach(a => renderArtikelCard(a, c));
+        } else {
+          subItems.forEach(a => renderArtikelCard(a, c));
+        }
       });
-    } else { catItems.forEach(a => renderArtikelCard(a, c)); }
+      catItems.filter(a => !a.subcat).forEach(a => renderArtikelCard(a, c));
+    } else {
+      catItems.forEach(a => renderArtikelCard(a, c));
+    }
   });
 }
 
@@ -878,8 +1164,11 @@ function renderArtikelCard(artikel, container) {
   const el = document.createElement('div');
   el.className = 'artikel-card' + (qty > 0 ? ' selected' : '');
   el.id = 'card-' + artikel.code;
+  const iconHTML = artikel.afbeelding
+    ? `<img src="${artikel.afbeelding}" alt="${artikel.naam}" loading="lazy" onerror="this.parentElement.innerHTML='${artikel.icon}'" />`
+    : artikel.icon;
   el.innerHTML = `
-    <div class="artikel-icon">${artikel.icon}</div>
+    <div class="artikel-icon">${iconHTML}</div>
     <div class="artikel-info">
       <div class="artikel-naam">${artikel.naam}</div>
       <div class="artikel-code">${artikel.code}${artikel.leverancier ? ' · ' + artikel.leverancier : ''} · per ${artikel.eenheid}</div>
