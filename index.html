@@ -730,6 +730,26 @@ window.onload = () => {
   document.getElementById('vrij-sluit-btn').addEventListener('click', sluitVrijArtikel);
   document.getElementById('vrij-overlay').addEventListener('click', function(e) { if (e.target === this) sluitVrijArtikel(); });
   document.getElementById('vrij-toevoegen-btn').addEventListener('click', customArtikelToevoegen);
+
+  // ── SW update forceren bij elke app-open ──────────────────
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if (!reg) return;
+      reg.update(); // Controleer altijd op nieuwe SW
+      reg.addEventListener('updatefound', () => {
+        const nieuweSW = reg.installing;
+        nieuweSW.addEventListener('statechange', () => {
+          if (nieuweSW.state === 'installed' && navigator.serviceWorker.controller) {
+            // Nieuwe versie beschikbaar — reload automatisch
+            nieuweSW.postMessage({ type: 'SKIP_WAITING' });
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+              window.location.reload();
+            });
+          }
+        });
+      });
+    });
+  }
 };
 
 // ── LADEN UIT GOOGLE SHEETS ───────────────────────────────────
